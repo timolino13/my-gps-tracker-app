@@ -1,0 +1,8 @@
+{
+  "name": "My GPS Tracker App",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "12fa3c41"
+}
