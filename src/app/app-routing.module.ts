@@ -19,7 +19,8 @@ const routes: Routes = [
   },
   {
     path: 'request-password-reset',
-    loadChildren: () => import('./authentication/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
+    loadChildren: () => import('./authentication/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule),
+    ...canActivate(redirectLoggedInToHome)
   },
   {
     path: 'reservations',

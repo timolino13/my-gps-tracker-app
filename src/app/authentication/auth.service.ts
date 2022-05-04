@@ -5,6 +5,7 @@ import {AlertController} from '@ionic/angular';
 import {Router} from '@angular/router';
 import {User} from '../models/user';
 import {Observable, of} from 'rxjs';
+import {take, tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -18,65 +19,70 @@ export class AuthService {
     return this.auth.currentUser;
   }
 
-  login({email, password}) {
-    signInWithEmailAndPassword(this.auth, email, password)
-      .then((user) => {
-        this.createUser().then(() => {
-          this.router.navigateByUrl('/home').then(() => console.log('navigated to home'));
-        });
-      })
+  async login({email, password}): Promise<any> {
+
+    const credentials = await signInWithEmailAndPassword(this.auth, email, password)
       .catch(async (e) => {
         console.error('login failed', e);
         await this.showAlert('Login failed', 'Please try again!');
       });
+
+    const data = await this.getUserData().catch(async (e) => {
+      return await this.createUserData();
+    });
+
+    console.log('User data: ', data);
+
+    if (data) {
+      console.log('User logged in: ', credentials);
+
+      await this.router.navigateByUrl('/reservations');
+    }
+
+    return credentials;
   }
 
-  logout() {
-    return signOut(this.auth);
+  async logout() {
+    await signOut(this.auth);
+    await this.router.navigateByUrl('/login');
   }
 
   async resetPassword(email: string) {
     return sendPasswordResetEmail(this.auth, email);
   }
 
-  createUser(): Promise<User> {
+  createUserData(): Promise<User> {
     return new Promise<User>(async (resolve, reject) => {
-      const userData = await this.getUserData();
-      if (userData == null) {
-        console.log('userData is null');
-        const user = this.getCurrentUser();
-        console.log('current user', user);
-        const userDocRef = doc(this.firestore, `users/${user.uid}`);
+      console.log('userData is null');
+      const user = this.getCurrentUser();
+      console.log('current user', user);
+      const userDocRef = doc(this.firestore, `users/${user.uid}`);
 
-        const data: User = {
-          id: user.uid,
-          email: user.email,
-          roles: {
-            admin: false
-          }
-        };
+      const data: User = {
+        id: user.uid,
+        email: user.email,
+        roles: {
+          admin: false
+        }
+      };
 
-        console.log('user does not exist', data);
-        setDoc(userDocRef, data)
-          .then(r => {
-            console.log('user data updated', r);
-            resolve(data);
-          })
-          .catch(err => {
-            console.error('error setting docs', err);
-            reject(err);
-          });
-      } else {
-        console.log('user data', userData);
-        resolve(userData);
-      }
+      setDoc(userDocRef, data)
+        .then(r => {
+          console.log('user data created', r);
+          resolve(data);
+        })
+        .catch(err => {
+          console.error('error creating user data', err);
+          reject(err);
+        });
     });
   }
 
   getUserData$(): Observable<User> {
     const user = this.getCurrentUser();
+
     if (user) {
-      console.log('user exists', user);
+      console.log('getting user data', user);
       const userDocRef = doc(this.firestore, `users/${user.uid}`);
       return docData(userDocRef, {idField: 'id'}) as Observable<User>;
     }
@@ -84,7 +90,11 @@ export class AuthService {
   }
 
   getUserData(): Promise<User> {
-    return this.getUserData$().toPromise();
+    return this.getUserData$()
+      .pipe(
+        take(1),
+        tap((userData: User) => userData)
+      ).toPromise();
   }
 
   async showAlert(header, message) {
