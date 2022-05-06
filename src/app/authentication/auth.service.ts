@@ -1,18 +1,17 @@
 import {Injectable} from '@angular/core';
 import {Auth, sendPasswordResetEmail, signInWithEmailAndPassword, signOut} from '@angular/fire/auth';
-import {doc, docData, Firestore, setDoc} from '@angular/fire/firestore';
+import {Firestore} from '@angular/fire/firestore';
 import {AlertController} from '@ionic/angular';
 import {Router} from '@angular/router';
-import {User} from '../models/user';
-import {Observable, of} from 'rxjs';
-import {take, tap} from 'rxjs/operators';
+import {UsersService} from '../services/users.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private auth: Auth, private firestore: Firestore, private router: Router, private alertController: AlertController) {
+  constructor(private readonly auth: Auth, private readonly firestore: Firestore, private readonly router: Router,
+              private readonly alertController: AlertController, private readonly usersService: UsersService) {
   }
 
   getCurrentUser() {
@@ -27,7 +26,7 @@ export class AuthService {
         await this.showAlert('Login failed', 'Please try again!');
       });
 
-    const data = await this.getUserData().catch(async (e) => await this.createUserData());
+    const data = await this.usersService.getUserData().catch(async (e) => await this.usersService.createUserData());
 
     console.log('User data: ', data);
 
@@ -53,52 +52,7 @@ export class AuthService {
     return sendPasswordResetEmail(this.auth, email);
   }
 
-  createUserData(): Promise<User> {
-    return new Promise<User>(async (resolve, reject) => {
-      console.log('userData is null');
-      const user = this.getCurrentUser();
-      console.log('current user', user);
-      const userDocRef = doc(this.firestore, `users/${user.uid}`);
 
-      const data: User = {
-        id: user.uid,
-        email: user.email,
-        roles: {
-          admin: false
-        },
-        verified: false,
-      };
-
-      setDoc(userDocRef, data)
-        .then(r => {
-          console.log('user data created', r);
-          resolve(data);
-        })
-        .catch(err => {
-          console.error('error creating user data', err);
-          reject(err);
-        });
-    });
-  }
-
-  getUserData$(): Observable<User> {
-    const user = this.getCurrentUser();
-
-    if (user) {
-      console.log('getting user data', user);
-      const userDocRef = doc(this.firestore, `users/${user.uid}`);
-      return docData(userDocRef, {idField: 'id'}) as Observable<User>;
-    }
-    return of(null);
-  }
-
-  getUserData(): Promise<User> {
-    return this.getUserData$()
-      .pipe(
-        take(1),
-        tap((userData: User) => userData)
-      ).toPromise();
-  }
 
   async showAlert(header, message) {
     const alert = await this.alertController.create({
