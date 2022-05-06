@@ -5,7 +5,7 @@ import {AlertController} from '@ionic/angular';
 import {Router} from '@angular/router';
 import {User} from '../models/user';
 import {Observable, of} from 'rxjs';
-import {take, tap} from "rxjs/operators";
+import {take, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -27,19 +27,21 @@ export class AuthService {
         await this.showAlert('Login failed', 'Please try again!');
       });
 
-    const data = await this.getUserData().catch(async (e) => {
-      return await this.createUserData();
-    });
+    const data = await this.getUserData().catch(async (e) => await this.createUserData());
 
     console.log('User data: ', data);
 
-    if (data) {
+    if (data && data.verified) {
       console.log('User logged in: ', credentials);
 
       await this.router.navigateByUrl('/reservations');
-    }
 
-    return credentials;
+      return credentials;
+    } else {
+      await this.showAlert('Login failed', 'Please ask your administrator to verify your account!');
+      await this.logout();
+      return null;
+    }
   }
 
   async logout() {
@@ -63,7 +65,8 @@ export class AuthService {
         email: user.email,
         roles: {
           admin: false
-        }
+        },
+        verified: false,
       };
 
       setDoc(userDocRef, data)

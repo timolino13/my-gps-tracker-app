@@ -4,4 +4,5 @@ export interface UserInterface {
   id: string;
   email: string;
   roles: RolesInterface;
+  verified: boolean;
 }
