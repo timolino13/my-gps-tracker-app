@@ -4,6 +4,8 @@ import {Firestore} from '@angular/fire/firestore';
 import {AlertController} from '@ionic/angular';
 import {Router} from '@angular/router';
 import {UsersService} from '../services/users.service';
+import {Observable, of} from "rxjs";
+import {User} from "firebase/auth";
 
 @Injectable({
   providedIn: 'root'
@@ -14,10 +16,6 @@ export class AuthService {
               private readonly alertController: AlertController, private readonly usersService: UsersService) {
   }
 
-  getCurrentUser() {
-    return this.auth.currentUser;
-  }
-
   async login({email, password}): Promise<any> {
 
     const credentials = await signInWithEmailAndPassword(this.auth, email, password)
@@ -26,8 +24,8 @@ export class AuthService {
         await this.showAlert('Login failed', 'Please try again!');
       });
 
-    const currentUser = this.getCurrentUser();
-    const data = await this.usersService.getUserData(currentUser).catch(async (e) => await this.usersService.createUserData(currentUser));
+    const data = await this.usersService.getUserData(this.getCurrentUser())
+      .catch(async (e) => await this.usersService.createUserData(this.getCurrentUser()));
 
     console.log('User data: ', data);
 
@@ -53,7 +51,6 @@ export class AuthService {
     return sendPasswordResetEmail(this.auth, email);
   }
 
-
   async showAlert(header, message) {
     const alert = await this.alertController.create({
       header,
@@ -61,5 +58,13 @@ export class AuthService {
       buttons: ['OK'],
     });
     await alert.present();
+  }
+
+  getCurrentUser(): User {
+    return this.auth.currentUser;
+  }
+
+  getCurrentUser$(): Observable<User> {
+    return of(this.getCurrentUser());
   }
 }

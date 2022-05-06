@@ -14,10 +14,6 @@ export class UsersService {
   constructor(private readonly auth: Auth, private readonly firestore: Firestore) {
   }
 
-  getCurrentUser(): User {
-    return this.auth.currentUser;
-  }
-
   createUserData(user: User): Promise<UserDocument> {
     return new Promise<UserDocument>(async (resolve, reject) => {
       console.log('userData is null');

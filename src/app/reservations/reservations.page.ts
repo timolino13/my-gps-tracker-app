@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {AuthService} from "../authentication/auth.service";
+import {Component, OnInit} from '@angular/core';
+import {AuthService} from '../authentication/auth.service';
 
 @Component({
   selector: 'app-reservations',
@@ -8,9 +8,11 @@ import {AuthService} from "../authentication/auth.service";
 })
 export class ReservationsPage implements OnInit {
 
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {
+  }
 
   ngOnInit() {
+    console.log(this.authService.getCurrentUser());
   }
 
   async logout() {
