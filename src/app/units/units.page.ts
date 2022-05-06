@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {UnitsService} from "./units.service";
 
 @Component({
   selector: 'app-units',
@@ -7,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UnitsPage implements OnInit {
 
-  constructor() { }
+  constructor(private readonly unitsService: UnitsService) { }
 
   ngOnInit() {
+    console.log('units', this.unitsService.getUnits());
   }
 
 }

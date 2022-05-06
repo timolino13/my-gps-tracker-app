@@ -13,6 +13,9 @@ export const environment = {
     messagingSenderId: '404303533124',
     measurementId: 'G-CBPD7705MX',
   },
+  backend: {
+    url: 'http://192.168.1.73:8080/api/v1',
+  },
   production: false
 };
 

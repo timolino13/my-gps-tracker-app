@@ -26,7 +26,8 @@ export class AuthService {
         await this.showAlert('Login failed', 'Please try again!');
       });
 
-    const data = await this.usersService.getUserData().catch(async (e) => await this.usersService.createUserData());
+    const currentUser = this.getCurrentUser();
+    const data = await this.usersService.getUserData(currentUser).catch(async (e) => await this.usersService.createUserData(currentUser));
 
     console.log('User data: ', data);
 
@@ -51,7 +52,6 @@ export class AuthService {
   async resetPassword(email: string) {
     return sendPasswordResetEmail(this.auth, email);
   }
-
 
 
   async showAlert(header, message) {

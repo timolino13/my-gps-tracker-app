@@ -1,7 +1,7 @@
 import {RolesInterface} from '../interfaces/roles';
-import {UserInterface} from '../interfaces/user';
+import {UserDocumentInterface} from '../interfaces/user-document';
 
-export class User implements UserInterface {
+export class UserDocument implements UserDocumentInterface {
   id: string;
   email: string;
   roles: RolesInterface;
