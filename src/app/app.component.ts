@@ -1,18 +1,28 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {AuthService} from "./authentication/auth.service";
+import {Router, RouterEvent} from "@angular/router";
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  public appPages = [
-    { title: 'Inbox', url: '/folder/Inbox', icon: 'mail' },
-    { title: 'Outbox', url: '/folder/Outbox', icon: 'paper-plane' },
-    { title: 'Favorites', url: '/folder/Favorites', icon: 'heart' },
-    { title: 'Archived', url: '/folder/Archived', icon: 'archive' },
-    { title: 'Trash', url: '/folder/Trash', icon: 'trash' },
-    { title: 'Spam', url: '/folder/Spam', icon: 'warning' },
+  public pages = [
+    {title: 'Reservations', url: '/reservations', icon: ''},
+    {title: 'Units', url: '/units', icon: ''},
   ];
-  public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  constructor() {}
+
+  selectedPath = '';
+
+  constructor(private router: Router, private authService: AuthService) {
+    router.events.subscribe((val: RouterEvent) => {
+      this.selectedPath = val.url;
+    });
+  }
+
+  async logout() {
+    await this.authService.logout();
+    await this.router.navigateByUrl('/login');
+  }
 }

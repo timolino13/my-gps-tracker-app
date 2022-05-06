@@ -26,8 +26,15 @@ const routes: Routes = [
     path: 'reservations',
     loadChildren: () => import('./reservations/reservations.module').then(m => m.ReservationsPageModule),
     ...canActivate(redirectUnauthorizedToLogin)
-  }
-
+  },
+  { // must be the last route
+    path: '**',
+    redirectTo: '',
+    pathMatch: 'full',
+  },  {
+    path: 'units',
+    loadChildren: () => import('./units/units.module').then( m => m.UnitsPageModule)
+  },
 
 ];
 
