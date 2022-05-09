@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UnitsService} from './units.service';
 import {Auth, onAuthStateChanged} from '@angular/fire/auth';
-import {UnitInterface} from '../models/interfaces/unit-interface';
 import {Subscription, timer} from 'rxjs';
+import {Unit} from '../models/unit';
 
 @Component({
 	selector: 'app-units',
@@ -10,7 +10,7 @@ import {Subscription, timer} from 'rxjs';
 	styleUrls: ['./units.page.scss'],
 })
 export class UnitsPage implements OnInit, OnDestroy {
-	unitsList$: UnitInterface[];
+	unitsList$: Unit[];
 	private timer: Subscription;
 
 
@@ -39,6 +39,7 @@ export class UnitsPage implements OnInit, OnDestroy {
 	ngOnDestroy() {
 		if (this.timer) {
 			this.timer.unsubscribe();
+			console.log('Units list unsubscribed');
 		}
 	}
 }

@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-	<ion-list tappable *ngFor="let unit of unitsList$">
+	<ion-list tappable *ngFor="let unit of unitsList$" [routerLink]="['/units', unit.id]">
 		<ion-item>
 			<ion-label>
 				<h2>{{unit.name}}</h2>
