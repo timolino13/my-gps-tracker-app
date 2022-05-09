@@ -4,6 +4,8 @@ import {UnitsService} from '../units.service';
 import {Subscription, timer} from 'rxjs';
 import {Unit} from '../../models/unit';
 import {FirebaseDevice} from '../../models/firebase-device';
+import {collection, Firestore, onSnapshot, query, where} from '@angular/fire/firestore';
+import {Device} from '../../models/device';
 
 @Component({
 	selector: 'app-detail-unit',
@@ -12,11 +14,12 @@ import {FirebaseDevice} from '../../models/firebase-device';
 })
 export class DetailUnitComponent implements OnInit, OnDestroy {
 	unit: Unit = null;
-	devices: FirebaseDevice[] = null;
+	devices: FirebaseDevice[] = [];
 
-	selectedDeviceId: number;
+	selectedDevice: FirebaseDevice;
 
 	private unitSubscription: Subscription;
+	private devicesSubscription: Subscription;
 
 	constructor(private readonly route: ActivatedRoute, private readonly unitsService: UnitsService) {
 	}
@@ -28,24 +31,23 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 			this.getUnit(unitId);
 		});
 
-		this.getDevicesList();
+		this.devicesSubscription = this.getDevicesList();
 	}
 
 	getUnit(unitId: string) {
 		this.unitsService.getUnitById(parseInt(unitId, 10)).subscribe(async value => {
 				this.unit = await value;
-				console.log('Unit', this.unit);
+
 				if (this.unit.devices.length > 0) {
-					this.selectedDeviceId = this.unit.devices[0].id;
+					this.selectedDevice = this.unit.devices[0] as FirebaseDevice;
 				}
 			}
 		);
 	}
 
 	getDevicesList() {
-		return this.unitsService.getAllDevices$().subscribe(devices => {
-			console.log('Devices', devices);
-			this.devices = devices;
+		return this.unitsService.getAllDevices$().subscribe(value => {
+			this.devices = value;
 		});
 	}
 
@@ -54,13 +56,21 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 			this.unitSubscription.unsubscribe();
 			console.log('UnitTimer unsubscribed');
 		}
+		if (this.devicesSubscription) {
+			this.devicesSubscription.unsubscribe();
+			console.log('DevicesList unsubscribed');
+		}
 	}
 
 	ngOnDestroy() {
 		this.unsubscribe();
 	}
 
-	changeDevice() {
-
+	saveChanges() {
+		if (this.unit && this.unit.devices.length > 0 && this.unit.devices[0].id !== this.selectedDevice.id) {
+			this.unitsService.updateDevice(this.unit.id, this.unit.devices[0], this.selectedDevice);
+		} else if (this.unit && this.unit.devices.length === 0 && this.selectedDevice) {
+			this.unitsService.assignDevice(this.unit.id, this.selectedDevice);
+		}
 	}
 }

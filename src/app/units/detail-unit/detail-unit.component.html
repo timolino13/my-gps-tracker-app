@@ -8,9 +8,9 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-	<ion-item *ngIf="unit && unit.devices.length > 0 && devices" class="ion-padding">
-		<ion-select [(ngModel)]="selectedDeviceId"  (ionChange)="changeDevice()">
-			<ion-select-option *ngFor="let device of devices;" [value]="device.id">{{device.name}}</ion-select-option>
+	<ion-item *ngIf="unit && devices" class="ion-padding">
+		<ion-select [(ngModel)]="selectedDevice">
+			<ion-select-option *ngFor="let device of devices;" [value]="device" [disabled]="device.assigned">{{device.name}}</ion-select-option>
 		</ion-select>
 	</ion-item>
 

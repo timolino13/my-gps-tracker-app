@@ -4,10 +4,11 @@ import {AuthService} from '../authentication/auth.service';
 import {Auth} from '@angular/fire/auth';
 import {map} from 'rxjs/operators';
 import {environment} from '../../environments/environment';
-import {collection, collectionData, Firestore, queryEqual, where} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
 import {Unit} from '../models/unit';
 import {FirebaseDevice} from '../models/firebase-device';
+import {collection, collectionData, doc, Firestore} from '@angular/fire/firestore';
+import {Device} from '../models/device';
 
 @Injectable({
 	providedIn: 'root'
@@ -26,10 +27,7 @@ export class UnitsService {
 							`${environment.backend.url}/units`,
 							{headers: {authorization: `Bearer ${await user.getIdToken()}`}}
 						).pipe(
-							map(units => {
-								console.log(units);
-								return units as Unit[];
-							})
+							map(units => units as Unit[])
 						).toPromise();
 					}
 				}
@@ -41,18 +39,12 @@ export class UnitsService {
 		return this.authService.getCurrentUser$().pipe(
 			map(async user => {
 				if (user) {
-					const res = await this.http.get(
+					return await this.http.get(
 						`${environment.backend.url}/units/${id}`,
 						{headers: {authorization: `Bearer ${await user.getIdToken()}`}}
 					).pipe(
-						map(unit => {
-							console.log(unit);
-							return unit as Unit;
-						})
+						map(unit => unit as Unit)
 					).toPromise();
-
-					console.log(res);
-					return res;
 				}
 			})
 		);
@@ -60,12 +52,14 @@ export class UnitsService {
 
 	getAllDevices$() {
 		const devicesReference = collection(this.firestore, `devices`);
-		return collectionData(devicesReference) as Observable<FirebaseDevice[]>;
+		return collectionData(devicesReference, {idField: 'imei'}) as Observable<FirebaseDevice[]>;
 	}
 
-	getFreeDevices$() {
-		const query = query(collection(this.firestore, `devices`), where('assigned', '==', false));
-		const devicesReference = collection(this.firestore, `devices`);
-		return collectionData(devicesReference) as Observable<FirebaseDevice[]>;
+	updateDevice(unitId: number, oldDevice: Device, newDevice: FirebaseDevice) {
+		const deviceRef = doc(this.firestore, `devices/${oldDevice.imei}`);
+	}
+
+	assignDevice(unitId: number, newDevice: FirebaseDevice) {
+
 	}
 }
