@@ -14,7 +14,7 @@ export const environment = {
     measurementId: 'G-CBPD7705MX',
   },
   backend: {
-    url: 'http://192.168.1.73:8080/api/v1',
+    url: 'http://192.168.53.16:8080/api/v1',
   },
   production: false
 };

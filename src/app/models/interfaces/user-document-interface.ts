@@ -1,4 +1,4 @@
-import {RolesInterface} from './roles';
+import {RolesInterface} from './roles-interface';
 
 export interface UserDocumentInterface {
   id: string;

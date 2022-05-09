@@ -4,6 +4,7 @@ import {AuthService} from '../authentication/auth.service';
 import {Auth} from '@angular/fire/auth';
 import {map} from 'rxjs/operators';
 import {environment} from '../../environments/environment';
+import {UnitInterface} from '../models/interfaces/unit-interface';
 
 @Injectable({
     providedIn: 'root'
@@ -17,12 +18,17 @@ export class UnitsService {
         return this.authService.getCurrentUser$().pipe(
             map(async user => {
                     if (user) {
-                        const res = this.http.get(
+                        const res = await this.http.get(
                             `${environment.backend.url}/units`,
                             {headers: {authorization: `Bearer ${await user.getIdToken()}`}}
+                        ).pipe(
+                            map(units => {
+                                console.log(units);
+                                return units as UnitInterface[];
+                            })
                         ).toPromise();
 
-                        return await res;
+                        return res;
                     }
                 }
             )
@@ -32,16 +38,15 @@ export class UnitsService {
     getUnitById(id: number) {
         return this.authService.getCurrentUser$().pipe(
             map(async user => {
-                    if (user) {
-                        const res = this.http.get(
-                            `${environment.backend.url}/units/${id}`,
-                            {headers: {authorization: `Bearer ${await user.getIdToken()}`}}
-                        ).toPromise();
+                if (user) {
+                    const res = this.http.get(
+                        `${environment.backend.url}/units/${id}`,
+                        {headers: {authorization: `Bearer ${await user.getIdToken()}`}}
+                    ).toPromise();
 
-                        return await res;
-                    }
+                    return await res as UnitInterface;
                 }
-            )
+            })
         );
     }
 }
