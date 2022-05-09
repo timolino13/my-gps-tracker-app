@@ -1,3 +1,18 @@
-<p>
-  detail-unit works!
-</p>
+<ion-header>
+	<ion-toolbar color="primary">
+		<ion-buttons slot="start">
+			<ion-back-button defaultHref="/units"></ion-back-button>
+		</ion-buttons>
+		<ion-title>{{unit?.name}}</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+	<ion-item *ngIf="unit && unit.devices.length > 0 && devices" class="ion-padding">
+		<ion-select [(ngModel)]="selectedDeviceId"  (ionChange)="changeDevice()">
+			<ion-select-option *ngFor="let device of devices;" [value]="device.id">{{device.name}}</ion-select-option>
+		</ion-select>
+	</ion-item>
+
+	<ion-label *ngIf="unit && unit.devices.length > 0">{{unit.devices[0].name}}</ion-label>
+</ion-content>
