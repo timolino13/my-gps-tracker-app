@@ -28,4 +28,20 @@ export class UnitsService {
             )
         );
     }
+
+    getUnitById(id: number) {
+        return this.authService.getCurrentUser$().pipe(
+            map(async user => {
+                    if (user) {
+                        const res = this.http.get(
+                            `${environment.backend.url}/units/${id}`,
+                            {headers: {authorization: `Bearer ${await user.getIdToken()}`}}
+                        ).toPromise();
+
+                        return await res;
+                    }
+                }
+            )
+        );
+    }
 }

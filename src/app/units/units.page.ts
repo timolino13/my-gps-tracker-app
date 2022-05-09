@@ -14,6 +14,10 @@ export class UnitsPage implements OnInit {
     }
 
     ngOnInit() {
+        this.getUnits();
+    }
+
+    getUnits() {
         onAuthStateChanged(this.auth, (user) => {
             if (user) {
                 this.unitsService.getUnits().subscribe(value => {
