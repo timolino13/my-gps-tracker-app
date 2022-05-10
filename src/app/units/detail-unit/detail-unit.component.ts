@@ -5,7 +5,7 @@ import {Subscription} from 'rxjs';
 import {Unit} from '../../models/unit';
 import {Device} from '../../models/device';
 import {collection, Firestore, getDocs, query, where} from '@angular/fire/firestore';
-import {LoadingController} from '@ionic/angular';
+import {LoadingController, ToastController} from '@ionic/angular';
 
 @Component({
 	selector: 'app-detail-unit',
@@ -20,7 +20,8 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 	selectedDevice: Device;
 
 	constructor(private readonly route: ActivatedRoute, private readonly unitsService: UnitsService,
-	            private readonly firestore: Firestore, private readonly loadingController: LoadingController) {
+	            private readonly firestore: Firestore, private readonly loadingController: LoadingController,
+	            private readonly toastController: ToastController) {
 	}
 
 	ngOnInit() {
@@ -48,16 +49,21 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 	}
 
 	async getUnit(unitId: string) {
-		const unitObs = await this.unitsService.getUnitById(parseInt(unitId, 10)).toPromise();
-		const unit = await unitObs.toPromise();
+		const resObs = await this.unitsService.getUnitById(parseInt(unitId, 10)).toPromise();
+		const res = await resObs.toPromise();
 
-		console.log('Unit: ', unit);
-		this.unit = unit;
+		if (res.ok) {
+			this.unit = res.body as Unit;
+			console.log('Unit: ', this.unit);
 
-		if (this.unit.devices.length > 0) {
-			const device = await this.unitsService.getDeviceByImeiFromFirestore(this.unit.devices[0].imei);
-			this.unitInitialDevice = device;
-			this.selectedDevice = device;
+			if (this.unit.devices.length > 0) {
+				const device = await this.unitsService.getDeviceByImeiFromFirestore(this.unit.devices[0].imei);
+				this.unitInitialDevice = device;
+				this.selectedDevice = device;
+			}
+		} else {
+			console.log('Error: ', res.body);
+			await this.showErrorToast(res.body);
 		}
 	}
 
@@ -97,5 +103,14 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 
 	async removeDevice() {
 		await this.unitsService.removeDevice(this.unit.id, this.unitInitialDevice);
+	}
+
+	async showErrorToast(message: string) {
+		const toast = await this.toastController.create({
+			message,
+			duration: 2000
+		});
+		await toast.present();
+		this.init();
 	}
 }

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpResponse} from '@angular/common/http';
 import {AuthService} from '../authentication/auth.service';
 import {Auth} from '@angular/fire/auth';
 import {map, switchMap} from 'rxjs/operators';
@@ -46,10 +46,11 @@ export class UnitsService {
 				if (user) {
 					return this.http.get(
 						`${environment.backend.url}/units/${id}`,
-						{headers: {authorization: `Bearer ${await user.getIdToken()}`}}
-					).pipe(
-						switchMap(async (unit: Unit) => new Unit(unit.id, unit.name, unit.username, unit.devices))
-					);
+						{
+							headers: {authorization: `Bearer ${await user.getIdToken()}`},
+							observe: 'response'
+						}
+					) as Observable<HttpResponse<any>>;
 				}
 			})
 		);
