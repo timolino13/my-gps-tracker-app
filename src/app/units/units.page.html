@@ -12,7 +12,8 @@
 		<ion-item>
 			<ion-label>
 				<h2>{{unit.name}}</h2>
-				<p *ngIf="unit.devices.length >0">{{unit.devices[0].name}}</p>
+				<p *ngIf="unit.devices.length > 0; else elseBlock">{{unit.devices[0].imei}}</p>
+				<ng-template #elseBlock><p>No tracker</p></ng-template>
 			</ion-label>
 		</ion-item>
 	</ion-list>

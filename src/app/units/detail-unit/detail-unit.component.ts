@@ -1,11 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {UnitsService} from '../units.service';
-import {Subscription, timer} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {Unit} from '../../models/unit';
-import {FirebaseDevice} from '../../models/firebase-device';
-import {collection, Firestore, onSnapshot, query, where} from '@angular/fire/firestore';
 import {Device} from '../../models/device';
+import {collection, Firestore, getDocs, query, where} from '@angular/fire/firestore';
+import {LoadingController} from '@ionic/angular';
 
 @Component({
 	selector: 'app-detail-unit',
@@ -14,40 +14,66 @@ import {Device} from '../../models/device';
 })
 export class DetailUnitComponent implements OnInit, OnDestroy {
 	unit: Unit = null;
-	devices: FirebaseDevice[] = [];
+	unitInitialDevice: Device = null;
+	availableDevices: Device[] = [];
 
-	selectedDevice: FirebaseDevice;
+	selectedDevice: Device;
 
 	private unitSubscription: Subscription;
 	private devicesSubscription: Subscription;
 
-	constructor(private readonly route: ActivatedRoute, private readonly unitsService: UnitsService) {
+	constructor(private readonly route: ActivatedRoute, private readonly unitsService: UnitsService,
+	            private readonly firestore: Firestore, private readonly loadingController: LoadingController) {
 	}
 
 	ngOnInit() {
+		this.init();
+	}
+
+	init() {
 		const unitId = this.route.snapshot.paramMap.get('unitId');
 
-		this.unitSubscription = timer(0, 10000).subscribe(() => {
-			this.getUnit(unitId);
+		let loader: HTMLIonLoadingElement;
+		this.loadingController.create().then(async r => {
+			loader = r;
+			await loader.present();
 		});
 
-		this.devicesSubscription = this.getDevicesList();
+		this.getUnit(unitId).then(() => {
+			console.log('Got unit');
+			this.getFreeDevicesList().then(async r => {
+				console.log('Unit: ', this.unit);
+				console.log('Initial device: ', this.unitInitialDevice);
+				console.log('Available devices: ', this.availableDevices);
+				await loader.dismiss();
+			});
+		});
 	}
 
-	getUnit(unitId: string) {
-		this.unitsService.getUnitById(parseInt(unitId, 10)).subscribe(async value => {
-				this.unit = await value;
+	async getUnit(unitId: string) {
+		const unitObs = await this.unitsService.getUnitById(parseInt(unitId, 10)).toPromise();
+		const unit = await unitObs.toPromise();
 
-				if (this.unit.devices.length > 0) {
-					this.selectedDevice = this.unit.devices[0] as FirebaseDevice;
-				}
-			}
-		);
+		console.log('Unit: ', unit);
+		this.unit = unit;
+
+		if (this.unit.devices.length > 0) {
+			const device = await this.unitsService.getDeviceByImeiFromFirestore(this.unit.devices[0].imei);
+			this.unitInitialDevice = device;
+			this.selectedDevice = device;
+		}
 	}
 
-	getDevicesList() {
-		return this.unitsService.getAllDevices$().subscribe(value => {
-			this.devices = value;
+	async getFreeDevicesList() {
+		const devicesRef = collection(this.firestore, 'devices');
+
+		// Create a query against the collection.
+		const q = query(devicesRef, where('assigned', '==', false));
+
+		const querySnapshot = await getDocs(q);
+		querySnapshot.forEach((doc) => {
+			console.log(doc.data());
+			this.availableDevices.push(doc.data() as Device);
 		});
 	}
 
@@ -66,11 +92,21 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 		this.unsubscribe();
 	}
 
-	saveChanges() {
-		if (this.unit && this.unit.devices.length > 0 && this.unit.devices[0].id !== this.selectedDevice.id) {
-			this.unitsService.updateDevice(this.unit.id, this.unit.devices[0], this.selectedDevice);
-		} else if (this.unit && this.unit.devices.length === 0 && this.selectedDevice) {
-			this.unitsService.assignDevice(this.unit.id, this.selectedDevice);
+	async saveChanges() {
+		let loader: HTMLIonLoadingElement;
+		this.loadingController.create().then(async r => {
+			loader = r;
+			await loader.present();
+		});
+
+		if (this.unitInitialDevice && this.unitInitialDevice.id !== this.selectedDevice.id) {
+			await this.unitsService.updateDevice(this.unit.id, this.unit.devices[0], this.selectedDevice);
+		} else if (this.unitInitialDevice == null && this.selectedDevice) {
+			await this.unitsService.assignDevice(this.unit.id, this.selectedDevice);
 		}
+
+		await loader.dismiss();
+
+		this.init();
 	}
 }
