@@ -7,11 +7,11 @@ export class FirestoreTimestamp {
 		this.seconds = seconds;
 	}
 
-	fromDate(date: Date): FirestoreTimestamp {
+	static fromDate(date: Date): FirestoreTimestamp {
 		return new FirestoreTimestamp(date.getTime() * 1000000, date.getTime() / 1000);
 	}
 
-	fromMillis(milliseconds: number): FirestoreTimestamp {
+	static fromMillis(milliseconds: number): FirestoreTimestamp {
 		return new FirestoreTimestamp(milliseconds * 1000000, milliseconds / 1000);
 	}
 

@@ -1,12 +1,24 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Reservations</ion-title>
-  </ion-toolbar>
+	<ion-toolbar color="primary">
+		<ion-buttons slot="start">
+			<ion-menu-button></ion-menu-button>
+		</ion-buttons>
+		<ion-title>Reservations</ion-title>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+	<ion-list>
+		<ion-item *ngFor="let reservation of reservations">
+			<ion-label>
+				<h2 *ngIf="reservation.unit; else noUnit">{{reservation.unit.name}}</h2>
+				<ng-template #noUnit>
+					<h2>{{reservation.unitId}}</h2>
+				</ng-template>
+				<p>{{reservation.startTime.toDate() | date:'short'}}</p>
+				<p>{{reservation.endTime.toDate() | date: 'short'}}</p>
+			</ion-label>
 
+		</ion-item>
+	</ion-list>
 </ion-content>

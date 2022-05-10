@@ -1,9 +1,11 @@
 import {FirestoreTimestamp} from './firestore-timestamp';
+import {Unit} from './unit';
 
 export class Reservation {
 	id: number;
-	deviceId: number;
-	userId: number;
+	unitId: number;
+	unit?: Unit;
+	userRef: number;
 	startTime: FirestoreTimestamp;
 	endTime: FirestoreTimestamp;
 }

@@ -7,7 +7,7 @@ import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {Unit} from '../models/unit';
 import {Device} from '../models/device';
-import {doc, Firestore, getDoc, updateDoc} from '@angular/fire/firestore';
+import {collection, doc, Firestore, getDoc, getDocs, query, updateDoc, where} from '@angular/fire/firestore';
 
 @Injectable({
 	providedIn: 'root'
@@ -48,12 +48,26 @@ export class UnitsService {
 						`${environment.backend.url}/units/${id}`,
 						{
 							headers: {authorization: `Bearer ${await user.getIdToken()}`},
-							observe: 'response'
 						}
-					) as Observable<HttpResponse<any>>;
+					)as Observable<Unit>;
 				}
 			})
 		);
+	}
+
+	async getFreeDevices(): Promise<Device[]> {
+		const devicesRef = collection(this.firestore, 'devices');
+
+		// Create a query against the collection.
+		const q = query(devicesRef, where('assigned', '==', false));
+
+		const querySnapshot = await getDocs(q);
+		const availableDevices: Device[] = [];
+		querySnapshot.forEach((d) => {
+			console.log(d.data());
+			availableDevices.push(d.data() as Device);
+		});
+		return availableDevices;
 	}
 
 	async getDeviceByImeiFromFirestore(imei: string) {

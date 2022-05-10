@@ -54,35 +54,21 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 	}
 
 	async getUnit(unitId: string) {
-		const resObs = await this.unitsService.getUnitById(parseInt(unitId, 10)).toPromise();
-		const res = await resObs.toPromise();
+		const unitObs = await this.unitsService.getUnitById(parseInt(unitId, 10)).toPromise();
+		const unit = await unitObs.toPromise();
 
-		if (res.ok) {
-			this.unit = res.body as Unit;
-			console.log('Unit: ', this.unit);
+		this.unit = unit;
+		console.log('Unit: ', this.unit);
 
-			if (this.unit.devices.length > 0) {
-				const device = await this.unitsService.getDeviceByImeiFromFirestore(this.unit.devices[0].imei);
-				this.unitInitialDevice = device;
-				this.selectedDevice = device;
-			}
-		} else {
-			console.log('Error: ', res.body);
-			await this.showErrorToast(res.body);
+		if (this.unit.devices.length > 0) {
+			const device = await this.unitsService.getDeviceByImeiFromFirestore(this.unit.devices[0].imei);
+			this.unitInitialDevice = device;
+			this.selectedDevice = device;
 		}
 	}
 
 	async getFreeDevicesList() {
-		const devicesRef = collection(this.firestore, 'devices');
-
-		// Create a query against the collection.
-		const q = query(devicesRef, where('assigned', '==', false));
-
-		const querySnapshot = await getDocs(q);
-		querySnapshot.forEach((doc) => {
-			console.log(doc.data());
-			this.availableDevices.push(doc.data() as Device);
-		});
+		this.availableDevices = await this.unitsService.getFreeDevices();
 	}
 
 	ngOnDestroy() {
