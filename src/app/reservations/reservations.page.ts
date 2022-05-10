@@ -20,10 +20,10 @@ export class ReservationsPage implements OnInit {
 
 	ngOnInit() {
 		console.log('ReservationsPage.ngOnInit');
-		this.getReservationsByUserId();
+		this.getFutureReservationsByUserId();
 	}
 
-	getReservationsByUserId() {
+	getFutureReservationsByUserId() {
 		console.log('ReservationsPage.getReservationsByUserId');
 		this.authService.getCurrentUser$().subscribe(user => {
 			if (user) {
