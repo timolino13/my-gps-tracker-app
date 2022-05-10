@@ -17,7 +17,7 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 	unitInitialDevice: Device = null;
 	availableDevices: Device[] = [];
 
-	selectedDevice: Device;
+	selectedDevice: Device = null;
 
 	constructor(private readonly route: ActivatedRoute, private readonly unitsService: UnitsService,
 	            private readonly firestore: Firestore, private readonly loadingController: LoadingController,
@@ -29,6 +29,11 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 	}
 
 	init() {
+		this.unit = null;
+		this.unitInitialDevice = null;
+		this.availableDevices = [];
+		this.selectedDevice = null;
+
 		const unitId = this.route.snapshot.paramMap.get('unitId');
 
 		let loader: HTMLIonLoadingElement;
@@ -102,7 +107,17 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 	}
 
 	async removeDevice() {
+		let loader: HTMLIonLoadingElement;
+		this.loadingController.create().then(async r => {
+			loader = r;
+			await loader.present();
+		});
+
 		await this.unitsService.removeDevice(this.unit.id, this.unitInitialDevice);
+
+		await loader.dismiss();
+
+		await this.init();
 	}
 
 	async showErrorToast(message: string) {

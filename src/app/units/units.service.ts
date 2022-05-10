@@ -7,7 +7,7 @@ import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {Unit} from '../models/unit';
 import {Device} from '../models/device';
-import {collection, collectionData, doc, docData, Firestore, getDoc, updateDoc} from '@angular/fire/firestore';
+import {doc, Firestore, getDoc, updateDoc} from '@angular/fire/firestore';
 
 @Injectable({
 	providedIn: 'root'
@@ -54,11 +54,6 @@ export class UnitsService {
 				}
 			})
 		);
-	}
-
-	getAllDevicesFromFirestore$() {
-		const devicesReference = collection(this.firestore, `devices`);
-		return collectionData(devicesReference, {idField: 'imei'}) as Observable<Device[]>;
 	}
 
 	async getDeviceByImeiFromFirestore(imei: string) {
