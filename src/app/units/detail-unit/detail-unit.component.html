@@ -27,11 +27,11 @@
 			</ion-item>
 		</ion-list>
 
-		<ion-fab *ngIf="(unitInitialDevice && selectedDevice && unitInitialDevice.imei !== selectedDevice.imei) || (unitInitialDevice === null && selectedDevice)" vertical="bottom"
-		         horizontal="end" slot="fixed">
-			<ion-fab-button color="primary" (click)="saveChanges()">
-				<ion-icon name="save"></ion-icon>
-			</ion-fab-button>
-		</ion-fab>
+		<ion-button *ngIf="unitInitialDevice" expand="block" color="danger" (click)="removeDevice()">Remove tracker</ion-button>
+
+		<ion-button *ngIf="(unitInitialDevice && selectedDevice && unitInitialDevice.imei !== selectedDevice.imei) || (unitInitialDevice === null && selectedDevice)" expand="block"
+		            color="primary" (click)="saveChanges()">Update
+		</ion-button>
+
 	</ng-container>
 </ion-content>

@@ -26,7 +26,13 @@ export class UnitsService {
 							`${environment.backend.url}/units`,
 							{headers: {authorization: `Bearer ${await user.getIdToken()}`}}
 						).pipe(
-							map(units => units as Unit[])
+							map((units: Unit[]) => {
+								const unitsList: Unit[] = [];
+								units.forEach(unit => {
+									unitsList.push(new Unit(unit.id, unit.name, unit.username, unit.devices));
+								});
+								return unitsList;
+							})
 						).toPromise();
 					}
 				}
@@ -65,13 +71,7 @@ export class UnitsService {
 
 	async updateDevice(unitId: number, oldDevice: Device, newDevice: Device) {
 		console.log(`Updating device ${oldDevice.imei}`);
-		const oldDeviceRef = doc(this.firestore, `devices/${oldDevice.imei}`);
-
-		await updateDoc(oldDeviceRef, {
-			assigned: false,
-			id: 0,
-			ownerId: 0
-		});
+		await this.removeDevice(unitId, oldDevice);
 
 		await this.assignDevice(unitId, newDevice);
 	}
@@ -110,5 +110,38 @@ export class UnitsService {
 			id: device.id,
 			ownerId: unitId
 		});
+	}
+
+	async removeDevice(unitId: number, oldDevice: Device): Promise<boolean> {
+		const token = await this.authService.getCurrentUser$().pipe(
+			switchMap(async (user) => {
+				console.log(user);
+				if (user) {
+					return user.getIdToken();
+				}
+			})
+		).toPromise();
+
+		const response = await this.http.delete(
+			`${environment.backend.url}/units/${unitId}/devices/${oldDevice.id}`,
+			{
+				headers: {authorization: `Bearer ${token}`},
+				observe: 'response'
+			}
+		).toPromise();
+
+		console.log(`Device removed`, response);
+		if (response.ok) {
+			const oldDeviceRef = doc(this.firestore, `devices/${oldDevice.imei}`);
+
+			await updateDoc(oldDeviceRef, {
+				assigned: false,
+				id: 0,
+				ownerId: 0
+			});
+
+			return true;
+		}
+		return false;
 	}
 }

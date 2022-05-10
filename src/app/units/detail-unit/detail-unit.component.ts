@@ -19,9 +19,6 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 
 	selectedDevice: Device;
 
-	private unitSubscription: Subscription;
-	private devicesSubscription: Subscription;
-
 	constructor(private readonly route: ActivatedRoute, private readonly unitsService: UnitsService,
 	            private readonly firestore: Firestore, private readonly loadingController: LoadingController) {
 	}
@@ -77,19 +74,7 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	unsubscribe() {
-		if (this.unitSubscription) {
-			this.unitSubscription.unsubscribe();
-			console.log('UnitTimer unsubscribed');
-		}
-		if (this.devicesSubscription) {
-			this.devicesSubscription.unsubscribe();
-			console.log('DevicesList unsubscribed');
-		}
-	}
-
 	ngOnDestroy() {
-		this.unsubscribe();
 	}
 
 	async saveChanges() {
@@ -100,7 +85,7 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 		});
 
 		if (this.unitInitialDevice && this.unitInitialDevice.id !== this.selectedDevice.id) {
-			await this.unitsService.updateDevice(this.unit.id, this.unit.devices[0], this.selectedDevice);
+			await this.unitsService.updateDevice(this.unit.id, this.unitInitialDevice, this.selectedDevice);
 		} else if (this.unitInitialDevice == null && this.selectedDevice) {
 			await this.unitsService.assignDevice(this.unit.id, this.selectedDevice);
 		}
@@ -108,5 +93,9 @@ export class DetailUnitComponent implements OnInit, OnDestroy {
 		await loader.dismiss();
 
 		this.init();
+	}
+
+	async removeDevice() {
+		await this.unitsService.removeDevice(this.unit.id, this.unitInitialDevice);
 	}
 }
