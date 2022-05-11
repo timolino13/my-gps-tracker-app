@@ -19,6 +19,8 @@ export class DetailUnitComponent implements OnInit, ViewWillEnter {
 	selectedDevice: Device = null;
 	noDevice: Device = new Device('No device', 0, false, 0, 0);
 
+	loading: HTMLIonLoadingElement;
+
 	constructor(private readonly route: ActivatedRoute, private readonly unitsService: UnitsService,
 	            private readonly firestore: Firestore, private readonly loadingController: LoadingController,
 	            private readonly toastController: ToastController, private readonly alertController: AlertController,
@@ -32,7 +34,7 @@ export class DetailUnitComponent implements OnInit, ViewWillEnter {
 		this.init();
 	}
 
-	init() {
+	async init() {
 		this.unit = null;
 		this.unitInitialDevice = null;
 		this.availableDevices = [];
@@ -40,19 +42,11 @@ export class DetailUnitComponent implements OnInit, ViewWillEnter {
 
 		const unitId = this.route.snapshot.paramMap.get('unitId');
 
-		let loader: HTMLIonLoadingElement;
-		this.loadingController.create().then(async r => {
-			loader = r;
-			await loader.present();
-		});
+		this.loading = await this.presentLoading('Loading unit...');
 
 		this.getUnit(unitId).then(() => {
-			console.log('Got unit');
 			this.getFreeDevicesList().then(async r => {
-				console.log('Unit: ', this.unit);
-				console.log('Initial device: ', this.unitInitialDevice);
-				console.log('Available devices: ', this.availableDevices);
-				await loader.dismiss();
+				await this.dismissLoading(this.loading);
 			});
 		});
 	}
@@ -60,27 +54,26 @@ export class DetailUnitComponent implements OnInit, ViewWillEnter {
 	async getUnit(unitId: string) {
 		const unitObs = await this.unitsService.getUnitById(parseInt(unitId, 10)).toPromise();
 		this.unit = await unitObs.toPromise();
-		console.log('Unit: ', this.unit);
-
 		if (this.unit.devices.length > 0) {
+			console.log('unit has devices');
 			const device = await this.unitsService.getDeviceByImeiFromFirestore(this.unit.devices[0].imei);
+			console.log('device from firestore', device);
 			this.unitInitialDevice = device;
 			this.selectedDevice = device;
 		} else {
 			this.selectedDevice = this.noDevice;
 		}
+
+		console.log('Unit: ', this.unit);
 	}
 
 	async getFreeDevicesList() {
 		this.availableDevices = await this.unitsService.getFreeDevices();
+		console.log('Available devices: ', this.availableDevices);
 	}
 
 	async saveChanges() {
-		let loader: HTMLIonLoadingElement;
-		this.loadingController.create().then(async r => {
-			loader = r;
-			await loader.present();
-		});
+		this.loading = await this.presentLoading('Saving changes...');
 
 		if (this.isRemove()) {
 			await this.unitsService.removeDevice(this.unit.id, this.unitInitialDevice);
@@ -90,32 +83,36 @@ export class DetailUnitComponent implements OnInit, ViewWillEnter {
 			await this.unitsService.assignDevice(this.unit.id, this.selectedDevice);
 		}
 
-		await loader.dismiss();
-
-		this.init();
-	}
-
-	async removeDevice() {
-		let loader: HTMLIonLoadingElement;
-		this.loadingController.create().then(async r => {
-			loader = r;
-			await loader.present();
-		});
-
-		await this.unitsService.removeDevice(this.unit.id, this.unitInitialDevice);
-
-		await loader.dismiss();
+		await this.dismissLoading(this.loading);
 
 		await this.init();
+
+		await this.presentToast('Changes saved');
 	}
 
-	async showToast(message: string) {
-		const toast = await this.toastController.create({
-			message,
-			duration: 2000
-		});
-		await toast.present();
-		this.init();
+	showSaveButton(): boolean {
+		return this.isUpdate() || this.isAssign() || this.isRemove();
+	}
+
+	isRemove(): boolean {
+		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No device' && this.selectedDevice.imei === 'No device';
+	}
+
+	isAssign(): boolean {
+		return this.unitInitialDevice == null && this.selectedDevice && this.selectedDevice.imei !== 'No device';
+	}
+
+	isUpdate(): boolean {
+		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No device' && this.selectedDevice.imei !== 'No device'
+			&& this.unitInitialDevice.id !== this.selectedDevice.id;
+	}
+
+	async goBack() {
+		if (this.showSaveButton()) {
+			await this.presentDiscardAlertConfirm();
+		} else {
+			await this.router.navigate(['/units']);
+		}
 	}
 
 	async presentSaveAlertConfirm() {
@@ -174,28 +171,30 @@ export class DetailUnitComponent implements OnInit, ViewWillEnter {
 		await alert.present();
 	}
 
-	showSaveButton(): boolean {
-		return this.isUpdate() || this.isAssign() || this.isRemove();
+	async presentToast(message: string) {
+		const toast = await this.toastController.create({
+			message,
+			duration: 2000
+		});
+		await toast.present();
+		await this.init();
 	}
 
-	isRemove(): boolean {
-		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No device' && this.selectedDevice.imei === 'No device';
+	async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
+		const loading = await this.loadingController.create({
+			message: message ? message : 'Loading...',
+		});
+		await loading.present();
+		return loading;
 	}
 
-	isAssign(): boolean {
-		return this.unitInitialDevice == null && this.selectedDevice && this.selectedDevice.imei !== 'No device';
-	}
-
-	isUpdate(): boolean {
-		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No device' && this.selectedDevice.imei !== 'No device'
-			&& this.unitInitialDevice.id !== this.selectedDevice.id;
-	}
-
-	async goBack() {
-		if (this.showSaveButton()) {
-			await this.presentDiscardAlertConfirm();
-		} else {
-			await this.router.navigate(['/units']);
+	async dismissLoading(loading: HTMLIonLoadingElement) {
+		if (loading) {
+			await loading.dismiss();
 		}
+	}
+
+	async goToReservations() {
+		await this.router.navigate(['/units/' + this.unit.id + '/reservations']);
 	}
 }
