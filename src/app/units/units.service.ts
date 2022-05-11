@@ -8,6 +8,7 @@ import {Observable} from 'rxjs';
 import {Unit} from '../models/unit';
 import {Device} from '../models/device';
 import {collection, doc, Firestore, getDoc, getDocs, query, updateDoc, where} from '@angular/fire/firestore';
+import {TrackPoint} from '../models/track-point';
 
 @Injectable({
 	providedIn: 'root'
@@ -29,7 +30,7 @@ export class UnitsService {
 							map((units: Unit[]) => {
 								const unitsList: Unit[] = [];
 								units.forEach(unit => {
-									unitsList.push(new Unit(unit.id, unit.name, unit.username, unit.devices));
+									unitsList.push(unit);
 								});
 								return unitsList;
 							})

@@ -1,0 +1,60 @@
+<ion-header>
+	<ion-toolbar color="primary">
+		<ion-buttons slot="start">
+			<ion-back-button defaultHref="/reservations"></ion-back-button>
+		</ion-buttons>
+		<ion-title>{{reservation?.unitName}}</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+	<ion-list *ngIf="reservation">
+		<ion-item>
+			<ion-label>
+				<h1><strong>{{reservation.unitName}}</strong></h1>
+			</ion-label>
+		</ion-item>
+
+		<ion-item>
+			<ion-label position="stacked"><strong>Start time:</strong></ion-label>
+			<ion-text>{{reservation.startTime.toDate() | date:'dd/MM/yy, H:mm'}}</ion-text>
+		</ion-item>
+		<ion-item>
+			<ion-label position="stacked"><strong>End time:</strong></ion-label>
+			<ion-text>{{reservation.endTime.toDate() | date:'dd/MM/yy, H:mm'}}</ion-text>
+		</ion-item>
+
+		<ng-container *ngIf="reservation.unit">
+			<ion-item>
+				<ion-label position="stacked"><strong>Last tracker activity:</strong></ion-label>
+				<ion-text>{{reservation.unit.deviceActivity | date:'dd/MM/yy, H:mm'}}</ion-text>
+			</ion-item>
+
+			<ng-container *ngIf="reservationActive; else reservationNotActive">
+				<ng-container *ngIf="showTracker; else noTrackerActivity">
+					<ion-item *ngIf="reservation.unit.trackPoint.valid">
+						<ion-label>
+							<h2><strong>Tracker info:</strong></h2>
+						</ion-label>
+						<ion-label>
+							<h3><strong>Latitude: </strong>{{reservation.unit.trackPoint.position.latitude | number: '1.0-5'}}</h3>
+						</ion-label>
+						<ion-label>
+							<h3><strong>Longitude: </strong>{{reservation.unit.trackPoint.position.longitude | number: '1.0-5'}}</h3>
+						</ion-label>
+					</ion-item>
+				</ng-container>
+				<ng-template #noTrackerActivity>
+					<ion-item *ngIf="reservation.unit.deviceActivity">
+						<ion-label>No data since reservation start</ion-label>
+					</ion-item>
+				</ng-template>
+			</ng-container>
+			<ng-template #reservationNotActive>
+				<ion-item *ngIf="reservation.unit.deviceActivity">
+					<ion-label>Reservation not active</ion-label>
+				</ion-item>
+			</ng-template>
+		</ng-container>
+	</ion-list>
+</ion-content>

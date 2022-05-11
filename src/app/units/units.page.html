@@ -8,7 +8,6 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-
 	<ng-container *ngIf="unitsList.length > 0; else noUnits">
 		<ion-list tappable *ngFor="let unit of unitsList" [routerLink]="['/units', unit.id]">
 			<ion-item>

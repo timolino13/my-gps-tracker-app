@@ -11,15 +11,17 @@
 	<ng-container *ngIf="unit">
 		<ion-list>
 			<ion-item>
-				<ion-label><strong>Name:</strong> {{unit.name}}</ion-label>
+				<ion-label position="stacked"><strong>Name:</strong></ion-label>
+				<ion-text>{{unit.name}}</ion-text>
 			</ion-item>
 
 			<ion-item>
-				<ion-label><strong>Username:</strong> {{unit.username}}</ion-label>
+				<ion-label position="stacked"><strong>Username:</strong></ion-label>
+				<ion-text>{{unit.username}}</ion-text>
 			</ion-item>
 
 			<ion-item *ngIf=" availableDevices">
-				<ion-label><strong>Trackers:</strong></ion-label>
+				<ion-label position="stacked"><strong>Trackers:</strong></ion-label>
 				<ion-select [(ngModel)]="selectedDevice" placeholder="Select a tracker">
 					<ion-select-option *ngIf="unitInitialDevice" [value]="unitInitialDevice">{{unitInitialDevice.imei}}</ion-select-option>
 					<ion-select-option *ngFor="let device of availableDevices;" [value]="device">{{device.imei}}</ion-select-option>
@@ -27,11 +29,11 @@
 			</ion-item>
 		</ion-list>
 
-		<ion-button *ngIf="unitInitialDevice" expand="block" color="danger" (click)="removeDevice()">Remove tracker</ion-button>
+		<ion-button class="ion-padding" *ngIf="unitInitialDevice" expand="block" color="danger" (click)="removeDevice()">Remove tracker</ion-button>
 
-		<ion-button *ngIf="(unitInitialDevice && selectedDevice && unitInitialDevice.imei !== selectedDevice.imei) || (unitInitialDevice === null && selectedDevice)" expand="block"
+		<ion-button class="ion-padding"
+		            *ngIf="(unitInitialDevice && selectedDevice && unitInitialDevice.imei !== selectedDevice.imei) || (unitInitialDevice === null && selectedDevice)" expand="block"
 		            color="primary" (click)="saveChanges()">Update
 		</ion-button>
-
 	</ng-container>
 </ion-content>
