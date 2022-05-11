@@ -1,8 +1,7 @@
 import {NgModule} from '@angular/core';
-import {Routes, RouterModule} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 
 import {UnitsPage} from './units.page';
-import {DetailUnitComponent} from './detail-unit/detail-unit.component';
 
 const routes: Routes = [
 	{
@@ -11,8 +10,9 @@ const routes: Routes = [
 	},
 	{
 		path: ':unitId',
-		component: DetailUnitComponent
+		loadChildren: () => import('./detail-unit/detail-unit.module').then( m => m.DetailUnitPageModule)
 	}
+
 ];
 
 @NgModule({

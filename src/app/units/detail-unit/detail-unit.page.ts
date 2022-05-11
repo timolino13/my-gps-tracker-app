@@ -1,17 +1,18 @@
 import {Component, OnInit} from '@angular/core';
+import {AlertController, LoadingController, ToastController, ViewWillEnter} from '@ionic/angular';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UnitsService} from '../units.service';
-import {Unit} from '../../models/unit';
 import {Device} from '../../models/device';
 import {Firestore} from '@angular/fire/firestore';
-import {AlertController, LoadingController, ToastController, ViewWillEnter} from '@ionic/angular';
+import {Unit} from '../../models/unit';
 
 @Component({
 	selector: 'app-detail-unit',
-	templateUrl: './detail-unit.component.html',
-	styleUrls: ['./detail-unit.component.scss'],
+	templateUrl: './detail-unit.page.html',
+	styleUrls: ['./detail-unit.page.scss'],
 })
-export class DetailUnitComponent implements OnInit, ViewWillEnter {
+export class DetailUnitPage implements OnInit, ViewWillEnter {
+
 	unit: Unit = null;
 	unitInitialDevice: Device = null;
 	availableDevices: Device[] = [];
