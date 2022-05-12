@@ -50,7 +50,7 @@ export class DetailUnitReservationComponent implements OnInit, OnDestroy {
 
 		this.reservationsService.getReservationById$(this.reservationId).subscribe(async reservation => {
 			console.log(reservation);
-			reservation.user = await this.usersService.getUserDataByUserRef(reservation.userRef);
+			reservation.user = await this.usersService.getUserDataByUserId(reservation.userId);
 			this.reservation = reservation;
 			await this.dismissLoading(this.loading);
 		});

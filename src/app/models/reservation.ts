@@ -1,4 +1,3 @@
-import {FirestoreTimestamp} from './firestore-timestamp';
 import {Unit} from './unit';
 import {UserDocument} from './user-document';
 import {Timestamp} from '@angular/fire/firestore';
@@ -8,15 +7,15 @@ export class Reservation {
 	unitId: number;
 	unitName: string;
 	unit?: Unit;
-	userRef: string;
+	userId: string;
 	user?: UserDocument;
 	startTime: Timestamp;
-	endTime: FirestoreTimestamp;
+	endTime: Timestamp;
 
-	constructor(unitId: number, unitName: string, userRef: string, startTime: Timestamp, endTime: FirestoreTimestamp) {
+	constructor(unitId: number, unitName: string, userId: string, startTime: Timestamp, endTime: Timestamp) {
 		this.unitId = unitId;
 		this.unitName = unitName;
-		this.userRef = userRef;
+		this.userId = userId;
 		this.startTime = startTime;
 		this.endTime = endTime;
 	}

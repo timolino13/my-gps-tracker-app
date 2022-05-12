@@ -21,7 +21,7 @@ export class ReservationsService {
 		const reservationDocRef = addDoc(collection(this.firestore, 'reservations'), {
 			unitName: reservation.unitName,
 			unitId: reservation.unitId,
-			userRef: reservation.userRef,
+			userId: reservation.userId,
 			startTime: reservation.startTime,
 			endTime: reservation.endTime,
 		});
@@ -33,7 +33,7 @@ export class ReservationsService {
 
 		const docRef = doc(this.firestore, `reservations/${reservation.id}`);
 		await updateDoc(docRef, {
-			userRef: reservation.userRef,
+			userId: reservation.userId,
 			startTime: reservation.startTime,
 			endTime: reservation.endTime,
 		});

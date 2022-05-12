@@ -53,7 +53,7 @@ export class ListUnitReservationsComponent implements OnInit {
 			console.log('querySnapshot: ', querySnapshot);
 			querySnapshot.forEach(async (d) => {
 				const reservation = d.data() as Reservation;
-				reservation.user = await this.usersService.getUserDataByUserRef(reservation.userRef);
+				reservation.user = await this.usersService.getUserDataByUserId(reservation.userId);
 				reservations.push(reservation);
 			});
 
@@ -73,7 +73,7 @@ export class ListUnitReservationsComponent implements OnInit {
 			querySnapshot.forEach(async (d) => {
 				const reservation = d.data() as Reservation;
 				if (reservation.endTime.toDate().getTime() >= new Date().getTime()) {
-					reservation.user = await this.usersService.getUserDataByUserRef(reservation.userRef);
+					reservation.user = await this.usersService.getUserDataByUserId(reservation.userId);
 					this.activeReservation = reservation;
 				}
 			});
