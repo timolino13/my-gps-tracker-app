@@ -44,7 +44,6 @@ export class UsersService {
 
 	getUserDataByUserId$(userId: string): Observable<UserDocument> {
 		if (userId) {
-			console.log('getting user data', userId);
 			const userDocRef = doc(this.firestore, `users/${userId}`);
 			return docData(userDocRef, {idField: 'id'}) as Observable<UserDocument>;
 		}
@@ -61,7 +60,6 @@ export class UsersService {
 
 	getUserDataByUserRef$(userRef): Observable<UserDocument> {
 		if (userRef) {
-			console.log('getting user data', userRef);
 			return docData(userRef, {idField: 'id'}) as Observable<UserDocument>;
 		}
 		return of(null);

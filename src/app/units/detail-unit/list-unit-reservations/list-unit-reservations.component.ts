@@ -37,15 +37,14 @@ export class ListUnitReservationsComponent implements OnInit {
 
 	async init() {
 		this.loading = await this.presentLoading('Loading reservations...');
-		this.getFutureReservationsByUnitId();
-		await this.getActiveReservationByUnitId();
+		this.getFutureReservationsByUnitId$();
 	}
 
-	getFutureReservationsByUnitId() {
+	getFutureReservationsByUnitId$() {
 		const q = query(
 			collection(this.firestore, 'reservations'),
 			where('unitId', '==', this.unitId),
-			where('startTime', '>=', new Date())
+			where('endTime', '>', new Date())
 		);
 
 		onSnapshot(q, (querySnapshot) => {
@@ -58,27 +57,8 @@ export class ListUnitReservationsComponent implements OnInit {
 			});
 
 			this.futureReservations = reservations;
+			this.dismissLoading(this.loading);
 		});
-	}
-
-	async getActiveReservationByUnitId() {
-		console.log('getActiveReservationByUnitId', this.unitId);
-		const q = query(
-			collection(this.firestore, 'reservations'),
-			where('unitId', '==', this.unitId),
-			where('startTime', '<=', new Date()),
-		);
-
-		onSnapshot(q, (querySnapshot) => {
-			querySnapshot.forEach(async (d) => {
-				const reservation = d.data() as Reservation;
-				if (reservation.endTime.toDate().getTime() >= new Date().getTime()) {
-					reservation.user = await this.usersService.getUserDataByUserId(reservation.userId);
-					this.activeReservation = reservation;
-				}
-			});
-		});
-		await this.dismissLoading(this.loading);
 	}
 
 	async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
