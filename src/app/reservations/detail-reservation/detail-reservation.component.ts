@@ -34,7 +34,7 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
 		const reservationId = this.route.snapshot.paramMap.get('reservationId');
 		this.unsubscribe();
 
-		this.reservationsService.getReservation$(reservationId).subscribe(async reservation => {
+		this.reservationsService.getReservationById$(reservationId).subscribe(async reservation => {
 			this.reservation = reservation;
 			await this.dismissLoading(this.loading);
 

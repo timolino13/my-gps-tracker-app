@@ -5,6 +5,7 @@ import {Observable, of} from 'rxjs';
 import {take, tap} from 'rxjs/operators';
 import {Auth} from '@angular/fire/auth';
 import {User} from 'firebase/auth';
+import {DocumentData, DocumentReference} from '@angular/fire/compat/firestore';
 
 @Injectable({
 	providedIn: 'root'
@@ -41,20 +42,37 @@ export class UsersService {
 		});
 	}
 
-	getUserData$(user: User): Observable<UserDocument> {
-		if (user) {
-			console.log('getting user data', user);
-			const userDocRef = doc(this.firestore, `users/${user.uid}`);
+	getUserDataByUserId$(userId: string): Observable<UserDocument> {
+		if (userId) {
+			console.log('getting user data', userId);
+			const userDocRef = doc(this.firestore, `users/${userId}`);
 			return docData(userDocRef, {idField: 'id'}) as Observable<UserDocument>;
 		}
 		return of(null);
 	}
 
-	getUserData(user: User): Promise<UserDocument> {
-		return this.getUserData$(user)
+	getUserDataByUserId(userId: string): Promise<UserDocument> {
+		return this.getUserDataByUserId$(userId)
 			.pipe(
 				take(1),
 				tap((userData: UserDocument) => userData)
 			).toPromise();
 	}
+
+	getUserDataByUserRef$(userRef): Observable<UserDocument> {
+		if (userRef) {
+			console.log('getting user data', userRef);
+			return docData(userRef, {idField: 'id'}) as Observable<UserDocument>;
+		}
+		return of(null);
+	}
+
+	getUserDataByUserRef(userRef): Promise<UserDocument> {
+		return this.getUserDataByUserRef$(userRef).pipe(
+			take(1),
+			tap((userData: UserDocument) => userData)
+		).toPromise();
+	}
+
+
 }
