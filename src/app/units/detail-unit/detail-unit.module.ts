@@ -7,6 +7,7 @@ import {IonicModule} from '@ionic/angular';
 import {DetailUnitPageRoutingModule} from './detail-unit-routing.module';
 import {ListUnitReservationsComponent} from './list-unit-reservations/list-unit-reservations.component';
 import {DetailUnitReservationComponent} from './detail-unit-reservation/detail-unit-reservation.component';
+import {CreateUnitReservationComponent} from './create-unit-reservation/create-unit-reservation.component';
 
 @NgModule({
 	imports: [
@@ -16,7 +17,7 @@ import {DetailUnitReservationComponent} from './detail-unit-reservation/detail-u
 		IonicModule,
 		DetailUnitPageRoutingModule
 	],
-	declarations: [ListUnitReservationsComponent, DetailUnitReservationComponent],
+	declarations: [ListUnitReservationsComponent, DetailUnitReservationComponent, CreateUnitReservationComponent],
 })
 export class DetailUnitPageModule {
 }

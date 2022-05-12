@@ -12,4 +12,12 @@ export class Reservation {
 	user?: UserDocument;
 	startTime: Timestamp;
 	endTime: FirestoreTimestamp;
+
+	constructor(unitId: number, unitName: string, userRef: string, startTime: Timestamp, endTime: FirestoreTimestamp) {
+		this.unitId = unitId;
+		this.unitName = unitName;
+		this.userRef = userRef;
+		this.startTime = startTime;
+		this.endTime = endTime;
+	}
 }

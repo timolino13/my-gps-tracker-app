@@ -1,0 +1,43 @@
+<ion-header>
+	<ion-toolbar color="primary">
+		<ion-buttons slot="start">
+			<ion-back-button defaultHref="/units/{{unitId}}/reservations"></ion-back-button>
+		</ion-buttons>
+		<ion-title>Create reservation</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+	<ion-list>
+		<ion-item>
+			<ion-label position="stacked"><strong>User</strong></ion-label>
+			<ion-select [(ngModel)]="selectedUser" placeholder="Select a user">
+				<ion-select-option *ngFor="let user of users" [value]="user">{{user.email}}</ion-select-option>
+			</ion-select>
+		</ion-item>
+
+		<ion-item>
+			<ion-label position="stacked">Start time</ion-label>
+			<ion-input placeholder="Pick start time" [value]=" startTime | date: 'dd/MM/yy, H:mm'" id="startTime"></ion-input>
+			<ion-note slot="error" *ngIf="!validStartTime()">Start time is invalid</ion-note>
+			<ion-popover trigger="startTime" size="cover">
+				<ng-template>
+					<ion-datetime [min]="now.toISOString()" [max]="endTime" [(ngModel)]="startTime"></ion-datetime>
+				</ng-template>
+			</ion-popover>
+		</ion-item>
+
+		<ion-item>
+			<ion-label position="stacked">End time</ion-label>
+			<ion-input placeholder="Pick end time" [value]=" endTime | date: 'dd/MM/yy, H:mm'" id="endTime"></ion-input>
+			<ion-note slot="error" *ngIf="!validEndTime()">End time is invalid</ion-note>
+			<ion-popover trigger="endTime" size="cover">
+				<ng-template>
+					<ion-datetime [min]="startTime" [(ngModel)]="endTime"></ion-datetime>
+				</ng-template>
+			</ion-popover>
+		</ion-item>
+
+		<ion-button type="submit" expand="block" [disabled]="!valid()" (click)="reserve()">Reserve</ion-button>
+	</ion-list>
+</ion-content>

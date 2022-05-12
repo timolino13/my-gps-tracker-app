@@ -33,4 +33,10 @@
 			</ion-label>
 		</ion-item>
 	</ion-list>
+
+	<ion-fab horizontal="end" vertical="bottom">
+		<ion-fab-button color="primary" [routerLink]="['/units/'+ unitId+ '/reservations/new']">
+			<ion-icon name="add"></ion-icon>
+		</ion-fab-button>
+	</ion-fab>
 </ion-content>

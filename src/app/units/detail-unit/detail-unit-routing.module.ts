@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { DetailUnitPage } from './detail-unit.page';
 import {ListUnitReservationsComponent} from './list-unit-reservations/list-unit-reservations.component';
 import {DetailUnitReservationComponent} from './detail-unit-reservation/detail-unit-reservation.component';
+import {CreateUnitReservationComponent} from './create-unit-reservation/create-unit-reservation.component';
 
 const routes: Routes = [
   {
@@ -13,6 +14,10 @@ const routes: Routes = [
   {
     path: 'reservations',
     component: ListUnitReservationsComponent
+  },
+  {
+    path: 'reservations/new',
+    component: CreateUnitReservationComponent
   },
   {
     path: 'reservations/:reservationId',
