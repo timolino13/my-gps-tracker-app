@@ -52,6 +52,7 @@ export class ListUnitReservationsComponent implements OnInit {
 			console.log('querySnapshot: ', querySnapshot);
 			querySnapshot.forEach(async (d) => {
 				const reservation = d.data() as Reservation;
+				reservation.id = d.id;
 				reservation.user = await this.usersService.getUserDataByUserId(reservation.userId);
 				reservations.push(reservation);
 			});

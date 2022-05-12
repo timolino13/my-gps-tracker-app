@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from '../authentication/auth.service';
 import {ReservationsService} from './reservations.service';
 import {Reservation} from '../models/reservation';
@@ -12,11 +12,11 @@ import {LoadingController} from '@ionic/angular';
 	templateUrl: './reservations.page.html',
 	styleUrls: ['./reservations.page.scss'],
 })
-export class ReservationsPage implements OnInit {
+export class ReservationsPage implements OnInit, OnDestroy {
 	futureReservations: Reservation[] = [];
-	activeReservation: Reservation;
 
 	loading: HTMLIonLoadingElement;
+	private unsub;
 
 	constructor(private readonly authService: AuthService, private readonly reservationsService: ReservationsService,
 	            private readonly firestore: Firestore, private readonly unitService: UnitsService,
@@ -27,10 +27,15 @@ export class ReservationsPage implements OnInit {
 		this.init();
 	}
 
+	ngOnDestroy() {
+		if (this.unsub) {
+			this.unsub();
+		}
+	}
+
 	async init() {
 		this.loading = await this.presentLoading('Loading reservations...');
 		this.getFutureReservationsByUserId();
-		this.getActiveReservationByUserId();
 	}
 
 	getFutureReservationsByUserId() {
@@ -38,52 +43,25 @@ export class ReservationsPage implements OnInit {
 		this.authService.getCurrentUser$().subscribe(async user => {
 			if (user) {
 				console.log('ReservationsPage.getReservationsByUserId.user', user);
-				const userRef = doc(this.firestore, `users/${user.uid}`);
 				const q = query(
 					collection(this.firestore, 'reservations'),
-					where('userRef', '==', userRef),
-					where('startTime', '>=', new Date()),
+					where('userId', '==', user.uid),
+					where('endTime', '>', new Date())
 				);
 
-				onSnapshot(q, (querySnapshot) => {
+				this.unsub = onSnapshot(q, (querySnapshot) => {
 					const reservations: Reservation[] = [];
 					querySnapshot.forEach(async (d) => {
 						const reservation = d.data() as Reservation;
+						reservation.id = d.id;
 						const unitResObs = await this.unitService.getUnitById(reservation.unitId).toPromise();
 						reservation.unit = await unitResObs.toPromise();
 						reservations.push(reservation);
 					});
 					console.log('ReservationsPage.getReservationsByUserId.reservations', reservations);
 					this.futureReservations = reservations;
+					this.dismissLoading(this.loading);
 				});
-			}
-		});
-	}
-
-	getActiveReservationByUserId() {
-		this.authService.getCurrentUser$().subscribe(async user => {
-			if (user) {
-				const userRef = doc(this.firestore, `users/${user.uid}`);
-				const q = query(
-					collection(this.firestore, 'reservations'),
-					where('userRef', '==', userRef),
-					where('startTime', '<=', new Date()),
-				);
-
-				onSnapshot(q, (querySnapshot) => {
-					const activeReservations: Reservation[] = [];
-					querySnapshot.forEach(async (d) => {
-						const reservation = d.data() as Reservation;
-						console.log('ReservationsPage.getActiveReservationByUserId.reservation', reservation);
-						if (reservation.endTime.toDate().getTime() >= new Date().getTime()) {
-							const unitResObs = await this.unitService.getUnitById(reservation.unitId).toPromise();
-							reservation.unit = await unitResObs.toPromise();
-							this.activeReservation = reservation;
-							console.log(this.activeReservation);
-						}
-					});
-				});
-				await this.dismissLoading(this.loading);
 			}
 		});
 	}

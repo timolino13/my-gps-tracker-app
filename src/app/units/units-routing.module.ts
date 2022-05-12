@@ -10,7 +10,7 @@ const routes: Routes = [
 	},
 	{
 		path: ':unitId',
-		loadChildren: () => import('./detail-unit/detail-unit.module').then( m => m.DetailUnitPageModule)
+		loadChildren: () => import('./detail-unit/detail-unit.module').then( m => m.DetailUnitPageModule),
 	}
 
 ];

@@ -3,7 +3,7 @@ import {UserDocument} from './user-document';
 import {Timestamp} from '@angular/fire/firestore';
 
 export class Reservation {
-	id?: number;
+	id?: string;
 	unitId: number;
 	unitName: string;
 	unit?: Unit;

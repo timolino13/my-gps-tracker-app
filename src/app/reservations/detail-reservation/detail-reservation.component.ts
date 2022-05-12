@@ -36,7 +36,7 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
 
 		this.reservationsService.getReservationById$(reservationId).subscribe(async reservation => {
 			this.reservation = reservation;
-			await this.dismissLoading(this.loading);
+			console.log(this.reservation);
 
 			this.deviceTimerSubscription = timer(0, 20000).subscribe(() => {
 				this.unitsService.getUnitById(reservation.unitId).subscribe(async unitProm => {
@@ -48,11 +48,10 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
 
 						const activityDate = new Date(this.reservation.unit.deviceActivity);
 						this.showTracker = activityDate.getTime() > startDate.getTime() && activityDate.getTime() < endDate.getTime();
-
-						console.log('reservation', reservation);
 					});
 				});
 			});
+			await this.dismissLoading(this.loading);
 		});
 	}
 

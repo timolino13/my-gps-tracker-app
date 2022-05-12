@@ -6,6 +6,7 @@ import {ListUnitReservationsComponent} from './list-unit-reservations/list-unit-
 import {DetailUnitReservationComponent} from './detail-unit-reservation/detail-unit-reservation.component';
 import {CreateUnitReservationComponent} from './create-unit-reservation/create-unit-reservation.component';
 
+
 const routes: Routes = [
   {
     path: '',

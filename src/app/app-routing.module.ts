@@ -17,6 +17,11 @@ const routes: Routes = [
 		...canActivate(redirectLoggedInToHome)
 	},
 	{
+		path: 'registration',
+		loadChildren: () => import('./authentication/registration/registration.module').then( m => m.RegistrationPageModule),
+		...canActivate(redirectLoggedInToHome)
+	},
+	{
 		path: 'request-password-reset',
 		loadChildren: () => import('./authentication/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule),
 		...canActivate(redirectLoggedInToHome)
@@ -36,6 +41,7 @@ const routes: Routes = [
 		redirectTo: '',
 		pathMatch: 'full',
 	},
+
 
 ];
 

@@ -106,6 +106,7 @@ export class CreateUnitReservationComponent implements OnInit {
 			console.log('querySnapshot: ', querySnapshot);
 			querySnapshot.forEach(async (d) => {
 				const reservation = d.data() as Reservation;
+				reservation.id = d.id;
 				reservations.push(reservation);
 			});
 
@@ -128,7 +129,7 @@ export class CreateUnitReservationComponent implements OnInit {
 					reservation.endTime.toDate().getTime() <= new Date(this.endTime).getTime()) ||
 				(reservation.startTime.toDate().getTime() <= new Date(this.startTime).getTime() &&
 					reservation.endTime.toDate().getTime() >= new Date(this.endTime).getTime())) {
-				console.log('already reserved');
+				console.log('already reserved', reservation);
 				return true;
 			}
 		}

@@ -8,17 +8,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-	<ion-list *ngIf="activeReservation || futureReservations.length > 0">
-		<ion-item *ngIf="activeReservation" [routerLink]="['/reservations', activeReservation.id]">
-			<ion-label>
-				<h2 *ngIf="activeReservation.unit; else noUnit">{{activeReservation.unit.name}}</h2>
-				<ng-template #noUnit>
-					<h2>{{activeReservation.unitId}}</h2>
-				</ng-template>
-				<p>{{activeReservation.startTime.toDate() | date:'dd/MM/yy, H:mm'}}</p>
-				<p>{{activeReservation.endTime.toDate() | date: 'dd/MM/yy, H:mm'}}</p>
-			</ion-label>
-		</ion-item>
+	<ion-list *ngIf="futureReservations.length > 0">
 		<ion-item *ngFor="let reservation of futureReservations" [routerLink]="['/reservations', reservation.id]">
 			<ion-label>
 				<h2 *ngIf="reservation.unit; else noUnit">{{reservation.unit.name}}</h2>
