@@ -19,8 +19,8 @@ export class ReservationsPage implements OnInit, OnDestroy {
 
 	unfilteredReservations: Reservation[] = [];
 
-	private unsub;
 	searchTerm: any;
+	private unsub;
 
 	constructor(private readonly authService: AuthService, private readonly reservationsService: ReservationsService,
 	            private readonly firestore: Firestore, private readonly unitService: UnitsService,
@@ -43,10 +43,9 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	}
 
 	getFutureReservationsByUserId() {
-		console.log('ReservationsPage.getReservationsByUserId');
 		this.authService.getCurrentUser$().subscribe(async user => {
+			console.log('userUpdate', user);
 			if (user) {
-				console.log('ReservationsPage.getReservationsByUserId.user', user);
 				const q = query(
 					collection(this.firestore, 'reservations'),
 					where('userId', '==', user.uid),
@@ -62,7 +61,6 @@ export class ReservationsPage implements OnInit, OnDestroy {
 						reservation.unit = await unitResObs.toPromise();
 						reservations.push(reservation);
 					});
-					console.log('ReservationsPage.getReservationsByUserId.reservations', reservations);
 					this.futureReservations = reservations;
 					this.unfilteredReservations = reservations;
 					this.dismissLoading(this.loading);
@@ -86,7 +84,6 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	}
 
 	search() {
-		console.log('ReservationsPage.search');
 		if (this.searchTerm) {
 			this.futureReservations = this.unfilteredReservations.filter(reservation => reservation.unit.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
 		} else {

@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {RouteReuseStrategy} from '@angular/router';
 
@@ -13,6 +13,7 @@ import {provideAuth, getAuth} from '@angular/fire/auth';
 import {provideFirestore, getFirestore} from '@angular/fire/firestore';
 import {HttpClientModule} from '@angular/common/http';
 import {IonicSelectableModule} from 'ionic-selectable';
+import {AdminGuard} from './guards/admin.guard';
 
 @NgModule({
 	declarations: [AppComponent],
@@ -28,7 +29,12 @@ import {IonicSelectableModule} from 'ionic-selectable';
 		provideAuth(() => getAuth()),
 		provideFirestore(() => getFirestore())
 	],
-	providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy}, ScreenTrackingService, UserTrackingService],
+	providers: [
+		{provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
+		ScreenTrackingService,
+		UserTrackingService,
+		AdminGuard
+	],
 	bootstrap: [AppComponent],
 })
 export class AppModule {

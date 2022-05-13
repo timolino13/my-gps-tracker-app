@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 import {canActivate, redirectLoggedInTo, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
+import {AdminGuard} from './guards/admin.guard';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['']);
 const redirectLoggedInToHome = () => redirectLoggedInTo(['reservations']);
@@ -18,7 +19,7 @@ const routes: Routes = [
 	},
 	{
 		path: 'register',
-		loadChildren: () => import('./authentication/registration/registration.module').then( m => m.RegistrationPageModule),
+		loadChildren: () => import('./authentication/registration/registration.module').then(m => m.RegistrationPageModule),
 		...canActivate(redirectLoggedInToHome)
 	},
 	{
@@ -34,7 +35,7 @@ const routes: Routes = [
 	{
 		path: 'units',
 		loadChildren: () => import('./units/units.module').then(m => m.UnitsPageModule),
-		...canActivate(redirectUnauthorizedToLogin)
+		canActivate: [AdminGuard],
 	},
 	{ // must be the last route
 		path: '**',

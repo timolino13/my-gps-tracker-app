@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Auth, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut} from '@angular/fire/auth';
+import {Auth, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut} from '@angular/fire/auth';
 import {Firestore} from '@angular/fire/firestore';
 import {AlertController} from '@ionic/angular';
 import {Router} from '@angular/router';
@@ -12,8 +12,11 @@ import {User} from 'firebase/auth';
 })
 export class AuthService {
 
+	private currentUser: User;
+
 	constructor(private readonly auth: Auth, private readonly firestore: Firestore, private readonly router: Router,
 	            private readonly alertController: AlertController, private readonly usersService: UsersService) {
+		this.observeUser();
 	}
 
 	async login({email, password}): Promise<any> {
@@ -61,11 +64,12 @@ export class AuthService {
 	}
 
 	getCurrentUser(): User {
-		return this.auth.currentUser;
+		return this.currentUser;
 	}
 
 	getCurrentUser$(): Observable<User> {
-		return of(this.getCurrentUser());
+		console.log('getCurrentUser$', this.currentUser);
+		return of(this.currentUser);
 	}
 
 	async register(value: { email: string; password: string; confirmPassword: string }) {
@@ -73,5 +77,16 @@ export class AuthService {
 		await this.usersService.createUserData(this.getCurrentUser());
 		await this.logout();
 		await this.router.navigateByUrl('/login');
+	}
+
+	private observeUser() {
+		onAuthStateChanged(this.auth, (user) => {
+			console.log('auth state changed', user);
+			if (user) {
+				this.currentUser = user;
+			} else {
+				this.currentUser = null;
+			}
+		});
 	}
 }
