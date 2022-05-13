@@ -45,7 +45,9 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 
 		this.loading = await this.presentLoading('Loading unit...');
 
-		this.getUnit(unitId).then(() => {
+		this.availableDevices.push(this.noDevice);
+
+		this.getUnit(unitId).then(async () => {
 			this.getFreeDevicesList().then(async r => {
 				await this.dismissLoading(this.loading);
 			});
@@ -58,9 +60,10 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 		if (this.unit.devices.length > 0) {
 			console.log('unit has devices');
 			const device = await this.unitsService.getDeviceByImeiFromFirestore(this.unit.devices[0].imei);
-			console.log('device from firestore', device);
-			this.unitInitialDevice = device;
+
 			this.selectedDevice = device;
+			this.unitInitialDevice = device;
+			this.availableDevices.push(device);
 		} else {
 			this.selectedDevice = this.noDevice;
 		}
@@ -69,7 +72,10 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 	}
 
 	async getFreeDevicesList() {
-		this.availableDevices = await this.unitsService.getFreeDevices();
+		const devices = await this.unitsService.getFreeDevices();
+		devices.forEach(device => {
+			this.availableDevices.push(device);
+		});
 		console.log('Available devices: ', this.availableDevices);
 	}
 

@@ -23,10 +23,8 @@
       </ion-item>
 
       <ion-item *ngIf="availableDevices">
-        <ion-label position="stacked"><strong>Trackers:</strong></ion-label>
+        <ion-label position="stacked"><strong>Tracker imei:</strong></ion-label>
         <ion-select [(ngModel)]="selectedDevice" placeholder="Select a tracker">
-          <ion-select-option [value]="noDevice">{{noDevice.imei}}</ion-select-option>
-          <ion-select-option *ngIf="unitInitialDevice" [value]="unitInitialDevice">{{unitInitialDevice.imei}}</ion-select-option>
           <ion-select-option *ngFor="let device of availableDevices;" [value]="device">{{device.imei}}</ion-select-option>
         </ion-select>
       </ion-item>
