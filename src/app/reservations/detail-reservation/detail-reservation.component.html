@@ -25,13 +25,13 @@
 		</ion-item>
 
 		<ng-container *ngIf="reservation.unit">
-			<ion-item>
-				<ion-label position="stacked"><strong>Last tracker activity:</strong></ion-label>
-				<ion-text>{{reservation.unit.deviceActivity | date:'dd/MM/yy, H:mm'}}</ion-text>
-			</ion-item>
-
 			<ng-container *ngIf="reservationActive; else reservationNotActive">
 				<ng-container *ngIf="showTracker; else noTrackerActivity">
+					<ion-item>
+						<ion-label position="stacked"><strong>Last tracker activity:</strong></ion-label>
+						<ion-text>{{reservation.unit.deviceActivity | date:'dd/MM/yy, H:mm'}}</ion-text>
+					</ion-item>
+
 					<ion-item *ngIf="reservation.unit.trackPoint.valid">
 						<ion-label>
 							<h2><strong>Tracker info:</strong></h2>
@@ -46,7 +46,7 @@
 				</ng-container>
 				<ng-template #noTrackerActivity>
 					<ion-item *ngIf="reservation.unit.deviceActivity">
-						<ion-label>No data since reservation start</ion-label>
+						<ion-label>No data transmitted since reservation start</ion-label>
 					</ion-item>
 				</ng-template>
 			</ng-container>

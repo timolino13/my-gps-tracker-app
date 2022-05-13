@@ -25,7 +25,7 @@
 			<ion-item *ngIf="availableDevices">
 				<ion-label position="stacked"><strong>Tracker imei:</strong></ion-label>
 				<ionic-selectable [(ngModel)]="selectedDevice" [items]="availableDevices" [canSearch]="true" [disabled]="false" [itemValueField]="'imei'" [itemTextField]="'imei'"
-				                  [closeButtonText]="'Close'" placeholder="Select tracker" [closeButtonSlot]="'end'" [headerColor]="'primary'"></ionic-selectable>
+				                  [closeButtonText]="'Close'" placeholder="Select tracker" [closeButtonSlot]="'end'" [headerColor]="'primary'" searchFailText="No trackers found"></ionic-selectable>
 			</ion-item>
 		</ion-list>
 

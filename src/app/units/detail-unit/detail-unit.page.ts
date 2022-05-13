@@ -18,7 +18,7 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 	availableDevices: Device[] = [];
 
 	selectedDevice: Device = null;
-	noDevice: Device = new Device('No device', 0, false, 0, 0);
+	noDevice: Device = new Device('No tracker', 0, false, 0, 0);
 
 	loading: HTMLIonLoadingElement;
 
@@ -102,15 +102,15 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 	}
 
 	isRemove(): boolean {
-		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No device' && this.selectedDevice.imei === 'No device';
+		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No tracker' && this.selectedDevice.imei === 'No tracker';
 	}
 
 	isAssign(): boolean {
-		return this.unitInitialDevice == null && this.selectedDevice && this.selectedDevice.imei !== 'No device';
+		return this.unitInitialDevice == null && this.selectedDevice && this.selectedDevice.imei !== 'No tracker';
 	}
 
 	isUpdate(): boolean {
-		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No device' && this.selectedDevice.imei !== 'No device'
+		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No tracker' && this.selectedDevice.imei !== 'No tracker'
 			&& this.unitInitialDevice.id !== this.selectedDevice.id;
 	}
 
