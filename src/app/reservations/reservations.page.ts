@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AuthService} from '../authentication/auth.service';
-import {ReservationsService} from './reservations.service';
+import {AuthService} from '../services/auth.service';
+import {ReservationsService} from '../services/reservations.service';
 import {Reservation} from '../models/reservation';
 import {collection, doc, Firestore, onSnapshot, query, where} from '@angular/fire/firestore';
-import {UnitsService} from '../units/units.service';
+import {UnitsService} from '../services/units.service';
 import {LoadingController} from '@ionic/angular';
 
 

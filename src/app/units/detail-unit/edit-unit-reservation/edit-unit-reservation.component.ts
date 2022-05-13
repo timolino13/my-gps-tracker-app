@@ -3,10 +3,10 @@ import {UserDocument} from '../../../models/user-document';
 import {Unit} from '../../../models/unit';
 import {Reservation} from '../../../models/reservation';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ReservationsService} from '../../../reservations/reservations.service';
+import {ReservationsService} from '../../../services/reservations.service';
 import {UsersService} from '../../../services/users.service';
 import {collection, Firestore, onSnapshot, query, Timestamp, where} from '@angular/fire/firestore';
-import {UnitsService} from '../../units.service';
+import {UnitsService} from '../../../services/units.service';
 import {LoadingController, ToastController} from '@ionic/angular';
 
 @Component({

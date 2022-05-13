@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AlertController, LoadingController, ToastController, ViewWillEnter} from '@ionic/angular';
 import {ActivatedRoute, Router} from '@angular/router';
-import {UnitsService} from '../units.service';
+import {UnitsService} from '../../services/units.service';
 import {Device} from '../../models/device';
 import {Firestore} from '@angular/fire/firestore';
 import {Unit} from '../../models/unit';

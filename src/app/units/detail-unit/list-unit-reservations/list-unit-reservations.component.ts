@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Reservation} from '../../../models/reservation';
-import {ReservationsService} from '../../../reservations/reservations.service';
+import {ReservationsService} from '../../../services/reservations.service';
 import {Unit} from '../../../models/unit';
 import {collection, Firestore, onSnapshot, query, where} from '@angular/fire/firestore';
-import {AuthService} from '../../../authentication/auth.service';
+import {AuthService} from '../../../services/auth.service';
 import {LoadingController} from '@ionic/angular';
 import {UsersService} from '../../../services/users.service';
 import {timer} from 'rxjs';

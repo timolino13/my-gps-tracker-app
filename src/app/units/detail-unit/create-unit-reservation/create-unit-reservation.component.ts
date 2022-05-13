@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ReservationsService} from '../../../reservations/reservations.service';
+import {ReservationsService} from '../../../services/reservations.service';
 import {UsersService} from '../../../services/users.service';
 import {collection, doc, Firestore, onSnapshot, query, Timestamp, where} from '@angular/fire/firestore';
 import {UserDocument} from '../../../models/user-document';
 import {Reservation} from '../../../models/reservation';
-import {UnitsService} from '../../units.service';
+import {UnitsService} from '../../../services/units.service';
 import {Unit} from '../../../models/unit';
 import {LoadingController, ToastController} from '@ionic/angular';
 

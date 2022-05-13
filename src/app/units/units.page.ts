@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {UnitsService} from './units.service';
+import {UnitsService} from '../services/units.service';
 import {Auth, onAuthStateChanged} from '@angular/fire/auth';
 import {Subscription, timer} from 'rxjs';
 import {Unit} from '../models/unit';

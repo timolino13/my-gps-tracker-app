@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ReservationsService} from '../reservations.service';
-import {UnitsService} from '../../units/units.service';
+import {ReservationsService} from '../../services/reservations.service';
+import {UnitsService} from '../../services/units.service';
 import {Reservation} from '../../models/reservation';
 import {ActivatedRoute} from '@angular/router';
 import {LoadingController} from '@ionic/angular';

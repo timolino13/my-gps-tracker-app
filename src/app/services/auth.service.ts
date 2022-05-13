@@ -3,7 +3,7 @@ import {Auth, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordRe
 import {Firestore} from '@angular/fire/firestore';
 import {AlertController} from '@ionic/angular';
 import {Router} from '@angular/router';
-import {UsersService} from '../services/users.service';
+import {UsersService} from './users.service';
 import {Observable, of} from 'rxjs';
 import {User} from 'firebase/auth';
 

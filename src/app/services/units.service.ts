@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpResponse} from '@angular/common/http';
-import {AuthService} from '../authentication/auth.service';
+import {AuthService} from './auth.service';
 import {Auth} from '@angular/fire/auth';
 import {map, switchMap} from 'rxjs/operators';
 import {environment} from '../../environments/environment';
