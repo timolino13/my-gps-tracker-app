@@ -29,10 +29,10 @@ export class ReservationsService {
 		return docData(await reservationDocRef, {idField: 'id'}) as Observable<Reservation>;
 	}
 
-	async updateReservation$(reservation: Reservation): Promise<void> {
+	async updateReservation$(reservation: Reservation) {
 
 		const docRef = doc(this.firestore, `reservations/${reservation.id}`);
-		await updateDoc(docRef, {
+		return await updateDoc(docRef, {
 			userId: reservation.userId,
 			startTime: reservation.startTime,
 			endTime: reservation.endTime,

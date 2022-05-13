@@ -1,10 +1,10 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 
-import { DetailUnitPage } from './detail-unit.page';
+import {DetailUnitPage} from './detail-unit.page';
 import {ListUnitReservationsComponent} from './list-unit-reservations/list-unit-reservations.component';
-import {DetailUnitReservationComponent} from './detail-unit-reservation/detail-unit-reservation.component';
 import {CreateUnitReservationComponent} from './create-unit-reservation/create-unit-reservation.component';
+import {EditUnitReservationComponent} from './edit-unit-reservation/edit-unit-reservation.component';
 
 
 const routes: Routes = [
@@ -22,7 +22,7 @@ const routes: Routes = [
   },
   {
     path: 'reservations/:reservationId',
-    component: DetailUnitReservationComponent
+    component: EditUnitReservationComponent
   }
 ];
 

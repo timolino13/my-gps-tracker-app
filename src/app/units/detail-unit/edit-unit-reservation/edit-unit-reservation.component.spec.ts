@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { DetailUnitReservationComponent } from './detail-unit-reservation.component';
+import { EditUnitReservationComponent } from './edit-unit-reservation.component';
 
-describe('DetailUnitReservationComponent', () => {
-  let component: DetailUnitReservationComponent;
-  let fixture: ComponentFixture<DetailUnitReservationComponent>;
+describe('EditUnitReservationComponent', () => {
+  let component: EditUnitReservationComponent;
+  let fixture: ComponentFixture<EditUnitReservationComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DetailUnitReservationComponent ],
+      declarations: [ EditUnitReservationComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DetailUnitReservationComponent);
+    fixture = TestBed.createComponent(EditUnitReservationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
