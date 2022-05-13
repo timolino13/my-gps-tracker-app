@@ -36,11 +36,7 @@ export class ForgotPasswordPage implements OnInit {
       });
     }).catch(error => {
       console.error('password reset error', error);
-      this.showAlert('Password reset failed', 'PLease try again later').then(() =>
-          this.router.navigate(['/login']).then(() => {
-            console.log('navigated to login');
-          })
-      );
+      this.showAlert('Password reset failed', 'PLease try again later');
     });
   }
 

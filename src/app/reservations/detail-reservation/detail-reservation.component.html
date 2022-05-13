@@ -24,8 +24,8 @@
 			<ion-text>{{reservation.endTime.toDate() | date:'dd/MM/yy, H:mm'}}</ion-text>
 		</ion-item>
 
-		<ng-container *ngIf="reservation.unit">
-			<ng-container *ngIf="reservationActive; else reservationNotActive">
+		<ng-container>
+			<ng-container *ngIf="reservationActive && reservation.unit; else reservationNotActive">
 				<ng-container *ngIf="showTracker; else noTrackerActivity">
 					<ion-item>
 						<ion-label position="stacked"><strong>Last tracker activity:</strong></ion-label>
@@ -51,7 +51,7 @@
 				</ng-template>
 			</ng-container>
 			<ng-template #reservationNotActive>
-				<ion-item *ngIf="reservation.unit.deviceActivity">
+				<ion-item>
 					<ion-label>Reservation not active</ion-label>
 				</ion-item>
 			</ng-template>

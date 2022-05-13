@@ -38,21 +38,26 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
 			this.reservation = reservation;
 			console.log(this.reservation);
 
-			this.deviceTimerSubscription = timer(0, 20000).subscribe(() => {
-				this.unitsService.getUnitById(reservation.unitId).subscribe(async unitProm => {
-					unitProm.toPromise().then(async unit => {
-						this.reservation.unit = unit;
-						const startDate = reservation.startTime.toDate();
-						const endDate = reservation.endTime.toDate();
-						this.reservationActive = startDate.getTime() < new Date().getTime() && endDate.getTime() > new Date().getTime();
+			const startDate = reservation.startTime.toDate();
+			const endDate = reservation.endTime.toDate();
+			this.reservationActive = startDate.getTime() < new Date().getTime() && endDate.getTime() > new Date().getTime();
+			console.log(this.reservationActive);
 
-						const activityDate = new Date(this.reservation.unit.deviceActivity);
-						this.showTracker = activityDate.getTime() > startDate.getTime() && activityDate.getTime() < endDate.getTime();
+			if (this.reservationActive) {
+				this.deviceTimerSubscription = timer(0, 20000).subscribe(() => {
+					this.unitsService.getUnitById(reservation.unitId).subscribe(async unitProm => {
+						unitProm.toPromise().then(async unit => {
+							this.reservation.unit = unit;
 
-						await this.dismissLoading(this.loading);
+							const activityDate = new Date(this.reservation.unit.deviceActivity);
+							this.showTracker = activityDate.getTime() > startDate.getTime() && activityDate.getTime() < endDate.getTime();
+						});
 					});
 				});
-			});
+			}else{
+				this.showTracker = false;
+			}
+			await this.dismissLoading(this.loading);
 		});
 	}
 

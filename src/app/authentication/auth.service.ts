@@ -21,28 +21,28 @@ export class AuthService {
 
 	async login({email, password}): Promise<any> {
 
-		const credentials = await signInWithEmailAndPassword(this.auth, email, password)
-			.catch(async (e) => {
-				console.error('login failed', e);
-				await this.showAlert('Login failed', 'Please try again!');
-			});
+		signInWithEmailAndPassword(this.auth, email, password).then(async (credentials) => {
+			const data = await this.usersService.getUserDataByUserId(this.getCurrentUser().uid)
+				.catch(async (e) => await this.usersService.createUserData(this.getCurrentUser()));
 
-		const data = await this.usersService.getUserDataByUserId(this.getCurrentUser().uid)
-			.catch(async (e) => await this.usersService.createUserData(this.getCurrentUser()));
+			console.log('User data: ', data);
 
-		console.log('User data: ', data);
+			if (data && data.verified) {
+				console.log('User logged in: ', credentials);
 
-		if (data && data.verified) {
-			console.log('User logged in: ', credentials);
+				await this.router.navigateByUrl('/reservations');
 
-			await this.router.navigateByUrl('/reservations');
-
-			return credentials;
-		} else {
-			await this.showAlert('Login failed', 'Please ask your administrator to verify your account!');
-			await this.logout();
-			return null;
-		}
+				return credentials;
+			} else {
+				await this.showAlert('Login failed', 'Please ask your administrator to verify your account!');
+				await this.logout();
+				return null;
+			}
+		}).catch(async (e) => {
+			console.error('login failed', e);
+			await this.showAlert('Login failed', 'Please try again!');
+			return;
+		});
 	}
 
 	async logout() {
@@ -73,10 +73,16 @@ export class AuthService {
 	}
 
 	async register(value: { email: string; password: string; confirmPassword: string }) {
-		await createUserWithEmailAndPassword(this.auth, value.email, value.password);
-		await this.usersService.createUserData(this.getCurrentUser());
-		await this.logout();
-		await this.router.navigateByUrl('/login');
+		await createUserWithEmailAndPassword(this.auth, value.email, value.password).then(async () => {
+			await this.usersService.createUserData(this.getCurrentUser());
+			await this.logout();
+			await this.router.navigateByUrl('/login');
+		}).catch((e) => {
+			console.error('register failed', e);
+			this.showAlert('Register failed', 'Please try again!');
+			return;
+		});
+
 	}
 
 	private observeUser() {
