@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-	<ion-list *ngIf="futureReservations.length > 0">
+	<ion-list *ngIf="futureReservations.length > 0; else noReservations">
 		<ion-item *ngFor="let reservation of futureReservations" [routerLink]="['/reservations', reservation.id]">
 			<ion-label>
 				<h2 *ngIf="reservation.unit; else noUnit">{{reservation.unit.name}}</h2>
@@ -20,4 +20,11 @@
 			</ion-label>
 		</ion-item>
 	</ion-list>
+	<ng-template #noReservations>
+		<ion-item>
+			<ion-label>
+				<h2>No reservations</h2>
+			</ion-label>
+		</ion-item>
+	</ng-template>
 </ion-content>

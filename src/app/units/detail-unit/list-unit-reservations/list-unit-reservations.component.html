@@ -10,31 +10,27 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-	<ion-list *ngIf="activeReservation || (futureReservations && futureReservations.length > 0)">
-		<ion-item *ngIf="activeReservation" [routerLink]="['/units/'+ unitId+ '/reservations/'+ activeReservation.id]">
-			<ion-label>
-				<h2 *ngIf="activeReservation.user; else noUser">{{activeReservation.user.email}}</h2>
-				<ng-template #noUser>
-					<h2>{{activeReservation.userRef}}</h2>
-				</ng-template>
-				<p>{{activeReservation.startTime.toDate() | date:'dd/MM/yy, H:mm'}}</p>
-				<p>{{activeReservation.endTime.toDate() | date: 'dd/MM/yy, H:mm'}}</p>
-			</ion-label>
-		</ion-item>
-
+	<ion-list *ngIf="(futureReservations && futureReservations.length > 0); else noReservations">
 		<ion-item *ngFor="let reservation of futureReservations" [routerLink]="['/units/'+ unitId+ '/reservations/'+ reservation.id]">
 			<ion-label>
 				<h2 *ngIf="reservation.user; else noUser">{{reservation.user.email}}</h2>
 				<ng-template #noUser>
-					<h2>{{reservation.userRef}}</h2>
+					<h2>{{reservation.userId}}</h2>
 				</ng-template>
 				<p>{{reservation.startTime.toDate() | date:'dd/MM/yy, H:mm'}}</p>
 				<p>{{reservation.endTime.toDate() | date: 'dd/MM/yy, H:mm'}}</p>
 			</ion-label>
 		</ion-item>
 	</ion-list>
+	<ng-template #noReservations>
+		<ion-item>
+			<ion-label>
+				<h2>No reservations</h2>
+			</ion-label>
+		</ion-item>
+	</ng-template>
 
-	<ion-fab horizontal="end" vertical="bottom">
+	<ion-fab horizontal="end" vertical="bottom" class="ion-padding" slot="fixed">
 		<ion-fab-button color="primary" [routerLink]="['/units/'+ unitId+ '/reservations/new']">
 			<ion-icon name="add"></ion-icon>
 		</ion-fab-button>

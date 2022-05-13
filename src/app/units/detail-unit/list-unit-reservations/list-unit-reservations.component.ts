@@ -18,7 +18,6 @@ export class ListUnitReservationsComponent implements OnInit {
 
 	unitId: number;
 	unit: Unit;
-	activeReservation: Reservation;
 	futureReservations: Reservation[];
 
 	loading: HTMLIonLoadingElement;

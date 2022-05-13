@@ -1,18 +1,19 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../auth.service';
-import {LoadingController} from '@ionic/angular';
+import {LoadingController, ViewWillEnter} from '@ionic/angular';
+import {Router} from '@angular/router';
 
 @Component({
 	selector: 'app-login',
 	templateUrl: './login.page.html',
 	styleUrls: ['./login.page.scss'],
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit, ViewWillEnter {
 	credentials: FormGroup;
 
 	constructor(private readonly formBuilder: FormBuilder, private readonly authService: AuthService,
-	            private readonly loadingController: LoadingController) {
+	            private readonly loadingController: LoadingController, private readonly router: Router) {
 	}
 
 	get email() {
@@ -24,9 +25,17 @@ export class LoginPage implements OnInit {
 	}
 
 	ngOnInit() {
+		this.init();
+	}
+
+	ionViewWillEnter() {
+		this.credentials.reset();
+	}
+
+	init() {
 		this.credentials = this.formBuilder.group({
 			email: ['', [Validators.required, Validators.email]],
-			password: ['', [Validators.required, Validators.minLength(6)]],
+			password: ['', [Validators.required]],
 		});
 	}
 
@@ -44,5 +53,13 @@ export class LoginPage implements OnInit {
 				console.log('error', error);
 			});
 		await loading.dismiss();
+	}
+
+	async register() {
+		await this.router.navigate(['/register']);
+	}
+
+	async forgotPassword() {
+		await this.router.navigate(['/reset-password']);
 	}
 }

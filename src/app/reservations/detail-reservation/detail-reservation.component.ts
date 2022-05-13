@@ -48,10 +48,11 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
 
 						const activityDate = new Date(this.reservation.unit.deviceActivity);
 						this.showTracker = activityDate.getTime() > startDate.getTime() && activityDate.getTime() < endDate.getTime();
+
+						await this.dismissLoading(this.loading);
 					});
 				});
 			});
-			await this.dismissLoading(this.loading);
 		});
 	}
 

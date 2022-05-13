@@ -17,12 +17,12 @@ const routes: Routes = [
 		...canActivate(redirectLoggedInToHome)
 	},
 	{
-		path: 'registration',
+		path: 'register',
 		loadChildren: () => import('./authentication/registration/registration.module').then( m => m.RegistrationPageModule),
 		...canActivate(redirectLoggedInToHome)
 	},
 	{
-		path: 'request-password-reset',
+		path: 'reset-password',
 		loadChildren: () => import('./authentication/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule),
 		...canActivate(redirectLoggedInToHome)
 	},

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Auth, sendPasswordResetEmail, signInWithEmailAndPassword, signOut} from '@angular/fire/auth';
+import {Auth, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut} from '@angular/fire/auth';
 import {Firestore} from '@angular/fire/firestore';
 import {AlertController} from '@ionic/angular';
 import {Router} from '@angular/router';
@@ -66,5 +66,12 @@ export class AuthService {
 
 	getCurrentUser$(): Observable<User> {
 		return of(this.getCurrentUser());
+	}
+
+	async register(value: { email: string; password: string; confirmPassword: string }) {
+		await createUserWithEmailAndPassword(this.auth, value.email, value.password);
+		await this.usersService.createUserData(this.getCurrentUser());
+		await this.logout();
+		await this.router.navigateByUrl('/login');
 	}
 }

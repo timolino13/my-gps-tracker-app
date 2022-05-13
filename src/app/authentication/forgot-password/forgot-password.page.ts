@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AlertController, LoadingController} from '@ionic/angular';
+import {AuthService} from '../auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-forgot-password',
@@ -7,9 +11,45 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ForgotPasswordPage implements OnInit {
 
-  constructor() { }
+  credentials: FormGroup;
 
-  ngOnInit() {
+  constructor(private formBuilder: FormBuilder, private loadingController: LoadingController, private alertController: AlertController,
+              private authService: AuthService, private router: Router) {
   }
 
+  get email() {
+    return this.credentials.get('email');
+  }
+
+  ngOnInit() {
+    this.credentials = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+    });
+  }
+
+  resetPassword() {
+    this.authService.resetPassword(this.credentials.value.email).then(() => {
+      this.showAlert('Password reset', 'Check your email for a reset link').then(r => {
+        this.router.navigate(['/login']).then(() => {
+          console.log('navigated to login');
+        });
+      });
+    }).catch(error => {
+      console.error('password reset error', error);
+      this.showAlert('Password reset failed', 'PLease try again later').then(() =>
+          this.router.navigate(['/login']).then(() => {
+            console.log('navigated to login');
+          })
+      );
+    });
+  }
+
+  async showAlert(header, message) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
 }

@@ -1,24 +1,31 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>My GPS Tracker</ion-title>
-  </ion-toolbar>
+	<ion-toolbar color="primary">
+		<ion-title>My GPS Tracker</ion-title>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form (ngSubmit)="login()" [formGroup]="credentials">
-    <ion-item lines="full">
-      <ion-label position="floating">Email</ion-label>
-      <ion-input type="email" formControlName="email"></ion-input>
-      <ion-note slot="error" *ngIf="(email.dirty || email.touched) && email.errors">Email is invalid</ion-note>
-    </ion-item>
+	<form (ngSubmit)="login()" [formGroup]="credentials">
+		<ion-item lines="full">
+			<ion-label position="floating">Email</ion-label>
+			<ion-input type="email" formControlName="email"></ion-input>
+			<ion-note slot="error" *ngIf="(email.dirty || email.touched) && email.errors">Email is invalid</ion-note>
+		</ion-item>
 
-    <ion-item lines="full">
-      <ion-label position="floating">Password</ion-label>
-      <ion-input type="password" formControlName="password"></ion-input>
-      <ion-note slot="error" *ngIf="(password.dirty || password.touched) && password.errors">Password needs to be 6 characters</ion-note>
-    </ion-item>
+		<ion-item lines="full">
+			<ion-label position="floating">Password</ion-label>
+			<ion-input type="password" formControlName="password"></ion-input>
+			<ion-note slot="error" *ngIf="(password.dirty || password.touched) && password.errors">Password needs to be 6 characters</ion-note>
+		</ion-item>
 
-    <ion-button type="submit" expand="block" [disabled]="!credentials.valid">Log in</ion-button>
-    <a [routerLink]="['/forgot-password']" class="small-text">Forgot Password?</a>
-  </form>
+		<ion-button type="submit" expand="block" [disabled]="!credentials.valid">Log in</ion-button>
+
+		<ion-item class="ion-text-center">
+			<ion-label>Don't have an account?</ion-label>
+		</ion-item>
+
+		<ion-button expand="block" (click)="register()">Register</ion-button>
+
+		<ion-button expand="block" fill="clear" (click)="forgotPassword()">Forgot password?</ion-button>
+	</form>
 </ion-content>
