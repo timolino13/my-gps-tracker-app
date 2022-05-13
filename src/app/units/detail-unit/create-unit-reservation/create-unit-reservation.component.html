@@ -11,9 +11,9 @@
 	<ion-list>
 		<ion-item>
 			<ion-label position="stacked"><strong>User</strong></ion-label>
-			<ion-select [(ngModel)]="selectedUser" placeholder="Select a user">
-				<ion-select-option *ngFor="let user of users" [value]="user">{{user.email}}</ion-select-option>
-			</ion-select>
+
+			<ionic-selectable [(ngModel)]="selectedUser" [items]="users" [canSearch]="true" [disabled]="false" [itemValueField]="'id'" [itemTextField]="'email'"
+			                  [closeButtonText]="'Close'" placeholder="Select user" [closeButtonSlot]="'end'" [headerColor]="'primary'"></ionic-selectable>
 		</ion-item>
 
 		<ion-item>

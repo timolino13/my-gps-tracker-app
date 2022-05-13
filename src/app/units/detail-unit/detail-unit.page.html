@@ -1,46 +1,45 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
-        <ion-icon name="arrow-back"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>{{unit?.name}}</ion-title>
-  </ion-toolbar>
+	<ion-toolbar color="primary">
+		<ion-buttons slot="start">
+			<ion-button (click)="goBack()">
+				<ion-icon name="arrow-back"></ion-icon>
+			</ion-button>
+		</ion-buttons>
+		<ion-title>{{unit?.name}}</ion-title>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ng-container *ngIf="unit">
-    <ion-list>
-      <ion-item>
-        <ion-label position="stacked"><strong>Name:</strong></ion-label>
-        <ion-text>{{unit.name}}</ion-text>
-      </ion-item>
+	<ng-container *ngIf="unit">
+		<ion-list>
+			<ion-item>
+				<ion-label position="stacked"><strong>Name:</strong></ion-label>
+				<ion-text>{{unit.name}}</ion-text>
+			</ion-item>
 
-      <ion-item>
-        <ion-label position="stacked"><strong>Username:</strong></ion-label>
-        <ion-text>{{unit.username}}</ion-text>
-      </ion-item>
+			<ion-item>
+				<ion-label position="stacked"><strong>Username:</strong></ion-label>
+				<ion-text>{{unit.username}}</ion-text>
+			</ion-item>
 
-      <ion-item *ngIf="availableDevices">
-        <ion-label position="stacked"><strong>Tracker imei:</strong></ion-label>
-        <ion-select [(ngModel)]="selectedDevice" placeholder="Select a tracker">
-          <ion-select-option *ngFor="let device of availableDevices;" [value]="device">{{device.imei}}</ion-select-option>
-        </ion-select>
-      </ion-item>
-    </ion-list>
+			<ion-item *ngIf="availableDevices">
+				<ion-label position="stacked"><strong>Tracker imei:</strong></ion-label>
+				<ionic-selectable [(ngModel)]="selectedDevice" [items]="availableDevices" [canSearch]="true" [disabled]="false" [itemValueField]="'imei'" [itemTextField]="'imei'"
+				                  [closeButtonText]="'Close'" placeholder="Select tracker" [closeButtonSlot]="'end'" [headerColor]="'primary'"></ionic-selectable>
+			</ion-item>
+		</ion-list>
 
-    <ion-button fill="clear" expand="block" (click)="goToReservations()">
-      <ion-label>
-        Reservations
-        <ion-icon slot="start" name="arrow-forward"></ion-icon>
-      </ion-label>
-    </ion-button>
+		<ion-button fill="clear" expand="block" (click)="goToReservations()">
+			<ion-label>
+				Reservations
+				<ion-icon slot="start" name="arrow-forward"></ion-icon>
+			</ion-label>
+		</ion-button>
 
-    <ion-fab *ngIf="showSaveButton()" vertical="bottom" horizontal="end" class="ion-padding" slot="fixed">
-      <ion-fab-button color="primary" (click)="presentSaveAlertConfirm()">
-        <ion-icon name="save"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-  </ng-container>
+		<ion-fab *ngIf="showSaveButton()" vertical="bottom" horizontal="end" class="ion-padding" slot="fixed">
+			<ion-fab-button color="primary" (click)="presentSaveAlertConfirm()">
+				<ion-icon name="save"></ion-icon>
+			</ion-fab-button>
+		</ion-fab>
+	</ng-container>
 </ion-content>
