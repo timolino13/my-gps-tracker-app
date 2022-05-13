@@ -20,7 +20,7 @@ export class EditUnitReservationComponent implements OnInit {
 	endTime: string;
 
 	startTime: string;
-	selectedUserId: string;
+	selectedUser: UserDocument;
 	users: UserDocument[];
 
 	reservation: Reservation;
@@ -94,7 +94,9 @@ export class EditUnitReservationComponent implements OnInit {
 
 	getReservationById() {
 		this.reservationsService.getReservationById$(this.reservationId).subscribe(async (reservation) => {
-			this.selectedUserId = reservation.userId;
+			 await this.usersService.getUserDataByUserId$(reservation.userId).subscribe((user) => {
+				 this.selectedUser = user;
+			 });
 			this.startTime = reservation.startTime.toDate().toISOString();
 			this.endTime = reservation.endTime.toDate().toISOString();
 			this.reservation = reservation;
@@ -125,11 +127,11 @@ export class EditUnitReservationComponent implements OnInit {
 
 		const unit = await this.getUnit();
 
-		console.log(this.selectedUserId, this.startTime, this.endTime);
+		console.log(this.selectedUser, this.startTime, this.endTime);
 		const reservation = new Reservation(
 			this.unitId,
 			unit.name,
-			this.selectedUserId,
+			this.selectedUser.id,
 			Timestamp.fromDate(new Date(this.startTime)),
 			Timestamp.fromDate(new Date(this.endTime))
 		);
@@ -172,11 +174,11 @@ export class EditUnitReservationComponent implements OnInit {
 	changed() {
 		return this.startTime !== this.reservation.startTime.toDate().toISOString() ||
 			this.endTime !== this.reservation.endTime.toDate().toISOString() ||
-			this.selectedUserId !== this.reservation.userId;
+			this.selectedUser.id !== this.reservation.userId;
 	}
 
 	valid() {
-		return this.selectedUserId && this.validStartTime() && this.validEndTime();
+		return this.selectedUser.id && this.validStartTime() && this.validEndTime();
 	}
 
 	isOldOrActiveReservation() {

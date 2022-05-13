@@ -16,7 +16,11 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	futureReservations: Reservation[] = [];
 
 	loading: HTMLIonLoadingElement;
+
+	unfilteredReservations: Reservation[] = [];
+
 	private unsub;
+	searchTerm: any;
 
 	constructor(private readonly authService: AuthService, private readonly reservationsService: ReservationsService,
 	            private readonly firestore: Firestore, private readonly unitService: UnitsService,
@@ -60,6 +64,7 @@ export class ReservationsPage implements OnInit, OnDestroy {
 					});
 					console.log('ReservationsPage.getReservationsByUserId.reservations', reservations);
 					this.futureReservations = reservations;
+					this.unfilteredReservations = reservations;
 					this.dismissLoading(this.loading);
 				});
 			}
@@ -77,6 +82,15 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	async dismissLoading(loading: HTMLIonLoadingElement) {
 		if (loading) {
 			await loading.dismiss();
+		}
+	}
+
+	search() {
+		console.log('ReservationsPage.search');
+		if (this.searchTerm) {
+			this.futureReservations = this.unfilteredReservations.filter(reservation => reservation.unit.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
+		} else {
+			this.futureReservations = this.unfilteredReservations;
 		}
 	}
 }

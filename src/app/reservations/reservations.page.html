@@ -8,6 +8,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+	<ion-searchbar animated="true" placeholder="Search" [(ngModel)]="searchTerm" (ionChange)="search()"></ion-searchbar>
 	<ion-list *ngIf="futureReservations.length > 0; else noReservations">
 		<ion-item *ngFor="let reservation of futureReservations" [routerLink]="['/reservations', reservation.id]">
 			<ion-label>

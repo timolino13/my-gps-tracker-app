@@ -20,7 +20,10 @@ export class ListUnitReservationsComponent implements OnInit {
 	unit: Unit;
 	futureReservations: Reservation[];
 
+	unfilteredReservations: Reservation[];
+
 	loading: HTMLIonLoadingElement;
+	searchTerm: any;
 
 	constructor(private readonly route: ActivatedRoute, private readonly reservationService: ReservationsService,
 	            private readonly authService: AuthService, private readonly firestore: Firestore,
@@ -57,6 +60,7 @@ export class ListUnitReservationsComponent implements OnInit {
 			});
 
 			this.futureReservations = reservations;
+			this.unfilteredReservations = reservations;
 			this.dismissLoading(this.loading);
 		});
 	}
@@ -72,6 +76,14 @@ export class ListUnitReservationsComponent implements OnInit {
 	async dismissLoading(loading: HTMLIonLoadingElement) {
 		if (loading) {
 			await loading.dismiss();
+		}
+	}
+
+	search() {
+		if (this.searchTerm) {
+			this.futureReservations = this.unfilteredReservations.filter(reservation => reservation.user.email.toLowerCase().includes(this.searchTerm.toLowerCase()));
+		} else {
+			this.futureReservations = this.unfilteredReservations;
 		}
 	}
 }

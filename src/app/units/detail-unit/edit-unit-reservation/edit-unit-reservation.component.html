@@ -8,12 +8,12 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-list *ngIf="reservation && selectedUserId && startTime && endTime">
+  <ion-list *ngIf="reservation && selectedUser && startTime && endTime">
     <ion-item>
       <ion-label position="stacked"><strong>User</strong></ion-label>
-      <ion-select [(ngModel)]="selectedUserId" placeholder="Select a user" [disabled]="isOldOrActiveReservation()">
-        <ion-select-option *ngFor="let user of users" [value]="user.id">{{user.email}}</ion-select-option>
-      </ion-select>
+
+      <ionic-selectable [(ngModel)]="selectedUser" [items]="users" [canSearch]="true" [disabled]="false" [itemValueField]="'id'" [itemTextField]="'email'"
+                        [closeButtonText]="'Close'" placeholder="Select user" [closeButtonSlot]="'end'" [headerColor]="'primary'"></ionic-selectable>
     </ion-item>
 
     <ion-item>

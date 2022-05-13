@@ -12,6 +12,10 @@ import {LoadingController, ViewWillEnter, ViewWillLeave} from '@ionic/angular';
 })
 export class UnitsPage implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
 	unitsList: Unit[] = [];
+	searchTerm: any;
+
+	unfilteredUnitsList: Unit[] = [];
+
 	private timer: Subscription;
 	private loading: HTMLIonLoadingElement;
 
@@ -25,6 +29,7 @@ export class UnitsPage implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeav
 		const sub = onAuthStateChanged(this.auth, async (user) => {
 			if (user) {
 				this.unitsList = await this.unitsService.getUnits().toPromise();
+				this.unfilteredUnitsList = this.unitsList;
 				sub();
 				await this.dismissLoading(this.loading);
 			}
@@ -62,6 +67,15 @@ export class UnitsPage implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeav
 	async dismissLoading(load: HTMLIonLoadingElement) {
 		if (load) {
 			await load.dismiss();
+		}
+	}
+
+	search() {
+		if (this.searchTerm) {
+			this.unitsList = this.unfilteredUnitsList.filter(unit => unit.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+				(unit.devices.length > 0 && unit.devices[0].imei.toLowerCase().includes(this.searchTerm.toLowerCase())));
+		} else {
+			this.unitsList = this.unfilteredUnitsList;
 		}
 	}
 }
