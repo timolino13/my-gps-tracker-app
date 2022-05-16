@@ -179,8 +179,10 @@ export class EditUnitReservationComponent implements OnInit {
 		}
 
 		for (const reservation of this.unitFutureReservations) {
-			if (this.reservationsService.isReserved(reservation, new Date(this.startTime), new Date(this.endTime))) {
-				return true;
+			if (reservation.unitId !== this.unitId) {
+				if (this.reservationsService.isReserved(reservation, new Date(this.startTime), new Date(this.endTime))) {
+					return true;
+				}
 			}
 		}
 
@@ -191,9 +193,11 @@ export class EditUnitReservationComponent implements OnInit {
 		this.userFutureReservations = await this.getFutureReservationsByUserId();
 
 		for (const reservation of this.userFutureReservations) {
-			if (this.reservationsService.isReserved(reservation, new Date(this.startTime), new Date(this.endTime))) {
-				console.log('user already reserved', reservation);
-				return true;
+			if (reservation.unitId !== this.unitId) {
+				if (this.reservationsService.isReserved(reservation, new Date(this.startTime), new Date(this.endTime))) {
+					console.log('user already reserved', reservation);
+					return true;
+				}
 			}
 		}
 	}
