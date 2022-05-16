@@ -40,11 +40,11 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	async init() {
 		this.loading = await this.presentLoading('Loading reservations...');
 		this.getFutureReservationsByUserId();
+		await this.dismissLoading(this.loading);
 	}
 
 	getFutureReservationsByUserId() {
 		this.authService.getCurrentUser$().subscribe(async user => {
-			console.log('userUpdate', user);
 			if (user) {
 				const q = query(
 					collection(this.firestore, 'reservations'),
@@ -63,7 +63,6 @@ export class ReservationsPage implements OnInit, OnDestroy {
 					});
 					this.futureReservations = reservations;
 					this.unfilteredReservations = reservations;
-					this.dismissLoading(this.loading);
 				});
 			}
 		});

@@ -68,7 +68,6 @@ export class AuthService {
 	}
 
 	getCurrentUser$(): Observable<User> {
-		console.log('getCurrentUser$', this.currentUser);
 		return of(this.currentUser);
 	}
 
@@ -87,7 +86,6 @@ export class AuthService {
 
 	private observeUser() {
 		onAuthStateChanged(this.auth, (user) => {
-			console.log('auth state changed', user);
 			if (user) {
 				this.currentUser = user;
 			} else {

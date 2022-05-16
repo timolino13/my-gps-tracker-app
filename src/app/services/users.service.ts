@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 import {UserDocument} from '../models/user-document';
-import {collection, doc, docData, Firestore, setDoc} from '@angular/fire/firestore';
+import {doc, docData, Firestore, setDoc} from '@angular/fire/firestore';
 import {Observable, of} from 'rxjs';
 import {take, tap} from 'rxjs/operators';
 import {Auth} from '@angular/fire/auth';
 import {User} from 'firebase/auth';
-import {DocumentData, DocumentReference} from '@angular/fire/compat/firestore';
 
 @Injectable({
 	providedIn: 'root'

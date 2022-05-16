@@ -10,7 +10,7 @@ import {UserDocument} from './models/user-document';
 	templateUrl: 'app.component.html',
 	styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 	public pages = [
 		{title: 'Reservations', url: '/reservations', icon: '', needAdmin: false},
 		{title: 'Units', url: '/units', icon: '', needAdmin: true},
@@ -18,15 +18,10 @@ export class AppComponent implements OnInit {
 
 	selectedPath = '';
 
-	currentUser: UserDocument;
-
-	constructor(private router: Router, private authService: AuthService, private usersService: UsersService) {
+	constructor(private router: Router, private authService: AuthService) {
 		router.events.subscribe((val: RouterEvent) => {
 			this.selectedPath = val.url;
 		});
-	}
-
-	ngOnInit() {
 	}
 
 	async logout() {

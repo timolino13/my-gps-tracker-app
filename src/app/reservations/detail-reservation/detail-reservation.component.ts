@@ -40,11 +40,11 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
 
 			const startDate = reservation.startTime.toDate();
 			const endDate = reservation.endTime.toDate();
-			this.reservationActive = startDate.getTime() < new Date().getTime() && endDate.getTime() > new Date().getTime();
-			console.log(this.reservationActive);
 
-			if (this.reservationActive) {
-				this.deviceTimerSubscription = timer(0, 20000).subscribe(() => {
+			this.deviceTimerSubscription = timer(0, 20000).subscribe(() => {
+				this.reservationActive = startDate.getTime() < new Date().getTime() && endDate.getTime() > new Date().getTime();
+				console.log(this.reservationActive);
+				if (this.reservationActive) {
 					this.unitsService.getUnitById(reservation.unitId).subscribe(async unitProm => {
 						unitProm.toPromise().then(async unit => {
 							this.reservation.unit = unit;
@@ -53,10 +53,10 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
 							this.showTracker = activityDate.getTime() > startDate.getTime() && activityDate.getTime() < endDate.getTime();
 						});
 					});
-				});
-			}else{
-				this.showTracker = false;
-			}
+				} else {
+					this.showTracker = false;
+				}
+			});
 			await this.dismissLoading(this.loading);
 		});
 	}

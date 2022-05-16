@@ -31,7 +31,6 @@ export class UnitsPage implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeav
 				this.unitsList = await this.unitsService.getUnits().toPromise();
 				this.unfilteredUnitsList = this.unitsList;
 				sub();
-				await this.dismissLoading(this.loading);
 			}
 		});
 	}
@@ -40,12 +39,13 @@ export class UnitsPage implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeav
 	}
 
 	ionViewWillEnter() {
-		this.presentLoading('Loading...').then(r => {
+		this.presentLoading('Loading...').then(async r => {
 			this.loading = r;
 			this.timer = timer(0, 60000).subscribe(() => {
 			});
 			console.log('Refreshing units list');
 			this.getUnits();
+			await this.dismissLoading(this.loading);
 		});
 	}
 
