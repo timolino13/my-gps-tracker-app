@@ -88,7 +88,14 @@ export class EditUnitReservationComponent implements OnInit {
 			Timestamp.fromDate(new Date(this.endTime))
 		);
 
-		await this.reservationsService.updateReservation$(reservation).catch(e => console.error('error updating reservation', e));
+		reservation.id = this.reservationId;
+
+		await this.reservationsService.updateReservation$(reservation).catch(e => {
+			console.error('error updating reservation', e);
+
+			this.presentToast('Error updating reservation');
+			return;
+		});
 
 		await this.dismissLoading(this.loading);
 
