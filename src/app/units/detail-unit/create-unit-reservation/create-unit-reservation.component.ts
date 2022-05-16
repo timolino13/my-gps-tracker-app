@@ -27,7 +27,8 @@ export class CreateUnitReservationComponent implements OnInit {
 	loading: HTMLIonLoadingElement;
 
 	private unit: Unit;
-	private futureReservations: Reservation[];
+	private unitFutureReservations: Reservation[];
+	private userFutureReservations: Reservation[];
 
 	constructor(private readonly route: ActivatedRoute, private readonly reservationsService: ReservationsService,
 	            private readonly usersService: UsersService, private readonly firestore: Firestore,
@@ -44,17 +45,27 @@ export class CreateUnitReservationComponent implements OnInit {
 		this.unitId = parseInt(this.route.snapshot.paramMap.get('unitId'), 10);
 		this.getUsers();
 		await this.getUnit();
-		await this.getFutureReservationsByUnitId$();
+		await this.dismissLoading(this.loading);
 	}
 
 	async reserve() {
+		this.loading = await this.presentLoading();
+
 		if (!this.valid()) {
 			await this.presentToast('Please fill all fields correctly');
+			await this.dismissLoading(this.loading);
 			return;
 		}
 
-		if (this.isAlreadyReserved()) {
+		if (await this.isUnitAlreadyReserved()) {
 			await this.presentToast('This unit is already reserved at this time');
+			await this.dismissLoading(this.loading);
+			return;
+		}
+
+		if (await this.isUserAlreadyReserved()) {
+			await this.presentToast('This user already has a reservation at this time');
+			await this.dismissLoading(this.loading);
 			return;
 		}
 
@@ -69,13 +80,27 @@ export class CreateUnitReservationComponent implements OnInit {
 
 		await this.reservationsService.createReservation$(reservation);
 
+		await this.dismissLoading(this.loading);
+
 		await this.presentToast('Reservation created');
 		this.router.navigate(['/units/' + this.unitId + '/reservations']).then(() => {
 			console.log('navigated');
 		});
 	}
 
-	getUsers() {
+	validStartTime() {
+		return this.startTime && this.startTime > this.now.toISOString() && this.startTime < this.endTime;
+	}
+
+	validEndTime() {
+		return this.endTime && this.endTime > this.startTime && this.endTime > this.now.toISOString();
+	}
+
+	valid() {
+		return this.selectedUser && this.validStartTime() && this.validEndTime();
+	}
+
+	private getUsers() {
 		const q = query(
 			collection(this.firestore, 'users'),
 			where('verified', '==', true)
@@ -94,59 +119,47 @@ export class CreateUnitReservationComponent implements OnInit {
 		});
 	}
 
-	getFutureReservationsByUnitId$() {
-		const q = query(
-			collection(this.firestore, 'reservations'),
-			where('unitId', '==', this.unitId),
-			where('endTime', '>', new Date())
-		);
+	private async getUnit() {
+		const unitObs = await this.unitsService.getUnitById$(this.unitId).toPromise();
+		this.unit = await unitObs.toPromise();
 
-		onSnapshot(q, (querySnapshot) => {
-			const reservations: Reservation[] = [];
-			console.log('querySnapshot: ', querySnapshot);
-			querySnapshot.forEach(async (d) => {
-				const reservation = d.data() as Reservation;
-				reservation.id = d.id;
-				reservations.push(reservation);
-			});
-
-			this.futureReservations = reservations;
-			this.dismissLoading(this.loading);
-		});
+		console.log('Unit: ', this.unit);
 	}
 
-	validStartTime() {
-		return this.startTime && this.startTime > this.now.toISOString() && this.startTime < this.endTime;
+	private async getFutureReservationsByUnitId() {
+		return await this.reservationsService.getFutureReservationsByUnitId(this.unitId);
 	}
 
-	isAlreadyReserved() {
-		for (const reservation of this.futureReservations) {
-			if ((reservation.startTime.toDate().getTime() <= new Date(this.startTime).getTime() &&
-					reservation.endTime.toDate().getTime() >= new Date(this.endTime).getTime()) ||
-				(reservation.startTime.toDate().getTime() >= new Date(this.startTime).getTime() &&
-					reservation.startTime.toDate().getTime() <= new Date(this.endTime).getTime()) ||
-				(reservation.endTime.toDate().getTime() >= new Date(this.startTime).getTime() &&
-					reservation.endTime.toDate().getTime() <= new Date(this.endTime).getTime()) ||
-				(reservation.startTime.toDate().getTime() <= new Date(this.startTime).getTime() &&
-					reservation.endTime.toDate().getTime() >= new Date(this.endTime).getTime())) {
-				console.log('already reserved', reservation);
+	private async getFutureReservationsByUserId() {
+		return await this.reservationsService.getFutureReservationsByUserId(this.selectedUser.id);
+	}
+
+	private async isUnitAlreadyReserved() {
+		if (!this.unitFutureReservations) {
+			this.unitFutureReservations = await this.getFutureReservationsByUnitId();
+		}
+
+		for (const reservation of this.unitFutureReservations) {
+			if (this.reservationsService.isReserved(reservation, new Date(this.startTime), new Date(this.endTime))) {
 				return true;
 			}
 		}
 
-		console.log('not reserved');
 		return false;
 	}
 
-	validEndTime() {
-		return this.endTime && this.endTime > this.startTime && this.endTime > this.now.toISOString();
+	private async isUserAlreadyReserved() {
+		this.userFutureReservations = await this.getFutureReservationsByUserId();
+
+		for (const reservation of this.userFutureReservations) {
+			if (this.reservationsService.isReserved(reservation, new Date(this.startTime), new Date(this.endTime))) {
+				console.log('user already reserved', reservation);
+				return true;
+			}
+		}
 	}
 
-	valid() {
-		return this.selectedUser && this.validStartTime() && this.validEndTime();
-	}
-
-	async presentToast(message: string) {
+	private async presentToast(message: string) {
 		const toast = await this.toastController.create({
 			message,
 			duration: 2000
@@ -154,8 +167,7 @@ export class CreateUnitReservationComponent implements OnInit {
 		await toast.present();
 	}
 
-
-	async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
+	private async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
 		const loading = await this.loadingController.create({
 			message: message ? message : 'Loading...',
 		});
@@ -163,16 +175,9 @@ export class CreateUnitReservationComponent implements OnInit {
 		return loading;
 	}
 
-	async dismissLoading(loading: HTMLIonLoadingElement) {
+	private async dismissLoading(loading: HTMLIonLoadingElement) {
 		if (loading) {
 			await loading.dismiss();
 		}
-	}
-
-	private async getUnit() {
-		const unitObs = await this.unitsService.getUnitById(this.unitId).toPromise();
-		this.unit = await unitObs.toPromise();
-
-		console.log('Unit: ', this.unit);
 	}
 }

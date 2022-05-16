@@ -45,7 +45,7 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
 				this.reservationActive = startDate.getTime() < new Date().getTime() && endDate.getTime() > new Date().getTime();
 				console.log(this.reservationActive);
 				if (this.reservationActive) {
-					this.unitsService.getUnitById(reservation.unitId).subscribe(async unitProm => {
+					this.unitsService.getUnitById$(reservation.unitId).subscribe(async unitProm => {
 						unitProm.toPromise().then(async unit => {
 							this.reservation.unit = unit;
 
