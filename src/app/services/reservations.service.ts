@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {addDoc, collection, doc, docData, Firestore, updateDoc} from '@angular/fire/firestore';
+import {addDoc, collection, doc, docData, Firestore, getDocs, query, updateDoc, where} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
 import {Reservation} from '../models/reservation';
 
@@ -37,5 +37,58 @@ export class ReservationsService {
 			startTime: reservation.startTime,
 			endTime: reservation.endTime,
 		});
+	}
+
+	async getFutureReservationsByUnitId(unitId: number): Promise<Reservation[]> {
+		const q = query(
+			collection(this.firestore, 'reservations'),
+			where('unitId', '==', unitId),
+			where('endTime', '>', new Date())
+		);
+
+		const querySnapshot = await getDocs(q);
+
+		const reservations: Reservation[] = [];
+		querySnapshot.forEach(document => {
+			const reservation = document.data() as Reservation;
+			reservation.id = document.id;
+			reservations.push(reservation);
+		});
+
+		return reservations;
+	}
+
+	async getFutureReservationsByUserId(userId: string): Promise<Reservation[]> {
+		const q = query(
+			collection(this.firestore, 'reservations'),
+			where('userId', '==', userId),
+			where('endTime', '>', new Date())
+		);
+
+		const querySnapshot = await getDocs(q);
+
+		const reservations: Reservation[] = [];
+		querySnapshot.forEach(document => {
+			const reservation = document.data() as Reservation;
+			reservation.id = document.id;
+			reservations.push(reservation);
+		});
+
+		return reservations;
+	}
+
+	isReserved(reservation: Reservation, startTime: Date, endTime: Date) {
+		if ((reservation.startTime.toDate().getTime() <= startTime.getTime() &&
+				reservation.endTime.toDate().getTime() >= endTime.getTime()) ||
+			(reservation.startTime.toDate().getTime() >= startTime.getTime() &&
+				reservation.startTime.toDate().getTime() <= endTime.getTime()) ||
+			(reservation.endTime.toDate().getTime() >= startTime.getTime() &&
+				reservation.endTime.toDate().getTime() <= endTime.getTime()) ||
+			(reservation.startTime.toDate().getTime() <= startTime.getTime() &&
+				reservation.endTime.toDate().getTime() >= endTime.getTime())) {
+			console.log('unit already reserved', reservation);
+			return true;
+		}
+		return false;
 	}
 }

@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from '../services/auth.service';
 import {ReservationsService} from '../services/reservations.service';
 import {Reservation} from '../models/reservation';
-import {collection, doc, Firestore, onSnapshot, query, where} from '@angular/fire/firestore';
+import {Firestore} from '@angular/fire/firestore';
 import {UnitsService} from '../services/units.service';
 import {LoadingController} from '@ionic/angular';
 
@@ -46,24 +46,16 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	getFutureReservationsByUserId() {
 		this.authService.getCurrentUser$().subscribe(async user => {
 			if (user) {
-				const q = query(
-					collection(this.firestore, 'reservations'),
-					where('userId', '==', user.uid),
-					where('endTime', '>', new Date())
-				);
+				this.futureReservations = await this.reservationsService.getFutureReservationsByUserId(user.uid);
 
-				this.unsub = onSnapshot(q, (querySnapshot) => {
-					const reservations: Reservation[] = [];
-					querySnapshot.forEach(async (d) => {
-						const reservation = d.data() as Reservation;
-						reservation.id = d.id;
-						const unitResObs = await this.unitService.getUnitById(reservation.unitId).toPromise();
-						reservation.unit = await unitResObs.toPromise();
-						reservations.push(reservation);
-					});
-					this.futureReservations = reservations;
-					this.unfilteredReservations = reservations;
-				});
+				for (const reservation of this.futureReservations) {
+					const unitResObs = await this.unitService.getUnitById(reservation.unitId).toPromise();
+					reservation.unit = await unitResObs.toPromise();
+				}
+
+				console.log(this.futureReservations);
+
+				this.unfilteredReservations = this.futureReservations;
 			}
 		});
 	}
