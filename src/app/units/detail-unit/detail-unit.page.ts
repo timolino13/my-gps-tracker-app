@@ -54,64 +54,8 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 		});
 	}
 
-	async getUnit(unitId: string) {
-		const unitObs = await this.unitsService.getUnitById$(parseInt(unitId, 10)).toPromise();
-		this.unit = await unitObs.toPromise();
-		if (this.unit.devices.length > 0) {
-			console.log('unit has devices');
-			const device = await this.unitsService.getDeviceByImeiFromFirestore(this.unit.devices[0].imei);
-
-			this.selectedDevice = device;
-			this.unitInitialDevice = device;
-			this.availableDevices.push(device);
-		} else {
-			this.selectedDevice = this.noDevice;
-		}
-
-		console.log('Unit: ', this.unit);
-	}
-
-	async getFreeDevicesList() {
-		const devices = await this.unitsService.getFreeDevices();
-		devices.forEach(device => {
-			this.availableDevices.push(device);
-		});
-		console.log('Available devices: ', this.availableDevices);
-	}
-
-	async saveChanges() {
-		this.loading = await this.presentLoading('Saving changes...');
-
-		if (this.isRemove()) {
-			await this.unitsService.removeDevice(this.unit.id, this.unitInitialDevice);
-		} else if (this.isUpdate()) {
-			await this.unitsService.updateDevice(this.unit.id, this.unitInitialDevice, this.selectedDevice);
-		} else if (this.isAssign()) {
-			await this.unitsService.assignDevice(this.unit.id, this.selectedDevice);
-		}
-
-		await this.dismissLoading(this.loading);
-
-		await this.init();
-
-		await this.presentToast('Changes saved');
-	}
-
 	showSaveButton(): boolean {
 		return this.isUpdate() || this.isAssign() || this.isRemove();
-	}
-
-	isRemove(): boolean {
-		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No tracker' && this.selectedDevice.imei === 'No tracker';
-	}
-
-	isAssign(): boolean {
-		return this.unitInitialDevice == null && this.selectedDevice && this.selectedDevice.imei !== 'No tracker';
-	}
-
-	isUpdate(): boolean {
-		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No tracker' && this.selectedDevice.imei !== 'No tracker'
-			&& this.unitInitialDevice.id !== this.selectedDevice.id;
 	}
 
 	async goBack() {
@@ -120,6 +64,10 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 		} else {
 			await this.router.navigate(['/units']);
 		}
+	}
+
+	async goToReservations() {
+		await this.router.navigate(['/units/' + this.unit.id + '/reservations']);
 	}
 
 	async presentSaveAlertConfirm() {
@@ -150,7 +98,63 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 		await alert.present();
 	}
 
-	async presentDiscardAlertConfirm() {
+	private async getUnit(unitId: string) {
+		const unitObs = await this.unitsService.getUnitById$(parseInt(unitId, 10)).toPromise();
+		this.unit = await unitObs.toPromise();
+		if (this.unit.devices.length > 0) {
+			console.log('unit has devices');
+			const device = await this.unitsService.getDeviceByImeiFromFirestore(this.unit.devices[0].imei);
+
+			this.selectedDevice = device;
+			this.unitInitialDevice = device;
+			this.availableDevices.push(device);
+		} else {
+			this.selectedDevice = this.noDevice;
+		}
+
+		console.log('Unit: ', this.unit);
+	}
+
+	private async getFreeDevicesList() {
+		const devices = await this.unitsService.getFreeDevices();
+		devices.forEach(device => {
+			this.availableDevices.push(device);
+		});
+		console.log('Available devices: ', this.availableDevices);
+	}
+
+	private async saveChanges() {
+		this.loading = await this.presentLoading('Saving changes...');
+
+		if (this.isRemove()) {
+			await this.unitsService.removeDevice(this.unit.id, this.unitInitialDevice);
+		} else if (this.isUpdate()) {
+			await this.unitsService.updateDevice(this.unit.id, this.unitInitialDevice, this.selectedDevice);
+		} else if (this.isAssign()) {
+			await this.unitsService.assignDevice(this.unit.id, this.selectedDevice);
+		}
+
+		await this.dismissLoading(this.loading);
+
+		await this.init();
+
+		await this.presentToast('Changes saved');
+	}
+
+	private isRemove(): boolean {
+		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No tracker' && this.selectedDevice.imei === 'No tracker';
+	}
+
+	private isAssign(): boolean {
+		return this.unitInitialDevice == null && this.selectedDevice && this.selectedDevice.imei !== 'No tracker';
+	}
+
+	private isUpdate(): boolean {
+		return this.unitInitialDevice && this.unitInitialDevice.imei !== 'No tracker' && this.selectedDevice.imei !== 'No tracker'
+			&& this.unitInitialDevice.id !== this.selectedDevice.id;
+	}
+
+	private async presentDiscardAlertConfirm() {
 		const alert = await this.alertController.create({
 			cssClass: 'my-custom-class',
 			header: 'Discard changes',
@@ -178,7 +182,7 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 		await alert.present();
 	}
 
-	async presentToast(message: string) {
+	private async presentToast(message: string) {
 		const toast = await this.toastController.create({
 			message,
 			duration: 2000
@@ -187,7 +191,7 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 		await this.init();
 	}
 
-	async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
+	private async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
 		const loading = await this.loadingController.create({
 			message: message ? message : 'Loading...',
 		});
@@ -195,13 +199,9 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 		return loading;
 	}
 
-	async dismissLoading(loading: HTMLIonLoadingElement) {
+	private async dismissLoading(loading: HTMLIonLoadingElement) {
 		if (loading) {
 			await loading.dismiss();
 		}
-	}
-
-	async goToReservations() {
-		await this.router.navigate(['/units/' + this.unit.id + '/reservations']);
 	}
 }

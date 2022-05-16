@@ -46,16 +46,7 @@ export class ReservationsService {
 			where('endTime', '>', new Date())
 		);
 
-		const querySnapshot = await getDocs(q);
-
-		const reservations: Reservation[] = [];
-		querySnapshot.forEach(document => {
-			const reservation = document.data() as Reservation;
-			reservation.id = document.id;
-			reservations.push(reservation);
-		});
-
-		return reservations;
+		return this.getReservationsFromQuery(q);
 	}
 
 	async getFutureReservationsByUserId(userId: string): Promise<Reservation[]> {
@@ -65,16 +56,7 @@ export class ReservationsService {
 			where('endTime', '>', new Date())
 		);
 
-		const querySnapshot = await getDocs(q);
-
-		const reservations: Reservation[] = [];
-		querySnapshot.forEach(document => {
-			const reservation = document.data() as Reservation;
-			reservation.id = document.id;
-			reservations.push(reservation);
-		});
-
-		return reservations;
+		return this.getReservationsFromQuery(q);
 	}
 
 	isReserved(reservation: Reservation, startTime: Date, endTime: Date) {
@@ -90,5 +72,21 @@ export class ReservationsService {
 			return true;
 		}
 		return false;
+	}
+
+	private async getReservationsFromQuery(reservationsQuery: any): Promise<Reservation[]> {
+		const querySnapshot = await getDocs(reservationsQuery).catch(error => {
+			console.error(error.message);
+			return [];
+		});
+
+		const reservations: Reservation[] = [];
+		querySnapshot.forEach(document => {
+			const reservation = document.data() as Reservation;
+			reservation.id = document.id;
+			reservations.push(reservation);
+		});
+
+		return reservations;
 	}
 }

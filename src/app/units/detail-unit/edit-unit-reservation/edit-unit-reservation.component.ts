@@ -7,7 +7,7 @@ import {ReservationsService} from '../../../services/reservations.service';
 import {UsersService} from '../../../services/users.service';
 import {collection, Firestore, onSnapshot, query, Timestamp, where} from '@angular/fire/firestore';
 import {UnitsService} from '../../../services/units.service';
-import {LoadingController, ToastController} from '@ionic/angular';
+import {AlertController, LoadingController, ToastController} from '@ionic/angular';
 
 @Component({
 	selector: 'app-edit-unit-reservation',
@@ -34,7 +34,8 @@ export class EditUnitReservationComponent implements OnInit {
 	constructor(private readonly route: ActivatedRoute, private readonly reservationsService: ReservationsService,
 	            private readonly usersService: UsersService, private readonly firestore: Firestore,
 	            private readonly unitsService: UnitsService, private readonly router: Router,
-	            private readonly loadingController: LoadingController, private readonly toastController: ToastController) {
+	            private readonly loadingController: LoadingController, private readonly toastController: ToastController,
+	            private readonly alertController: AlertController) {
 	}
 
 	ngOnInit() {
@@ -90,20 +91,20 @@ export class EditUnitReservationComponent implements OnInit {
 
 		reservation.id = this.reservationId;
 
-		await this.reservationsService.updateReservation$(reservation).catch(e => {
+		this.reservationsService.updateReservation$(reservation).then(async () => {
+
+			await this.presentToast('Reservation edited successfully');
+
+			this.router.navigate(['/units/' + this.unitId + '/reservations']).then(() => {
+				console.log('navigated');
+			});
+		}).catch(e => {
 			console.error('error updating reservation', e);
 
-			this.presentToast('Error updating reservation');
-			return;
+			this.presentErrorAlert('Error editing reservation', 'There was an error while saving your changes. Please try again.');
 		});
 
 		await this.dismissLoading(this.loading);
-
-		await this.presentToast('Reservation edited successfully');
-
-		this.router.navigate(['/units/' + this.unitId + '/reservations']).then(() => {
-			console.log('navigated');
-		});
 	}
 
 	changed() {
@@ -216,6 +217,16 @@ export class EditUnitReservationComponent implements OnInit {
 		});
 		await loading.present();
 		return loading;
+	}
+
+	private async presentErrorAlert(header, message) {
+		const alert = await this.alertController.create({
+			header,
+			message,
+			buttons: ['OK']
+		});
+
+		await alert.present();
 	}
 
 	private async dismissLoading(loading: HTMLIonLoadingElement) {
