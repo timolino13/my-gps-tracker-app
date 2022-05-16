@@ -40,6 +40,7 @@ export class ListUnitReservationsComponent implements OnInit {
 	async init() {
 		this.loading = await this.presentLoading('Loading reservations...');
 		this.getFutureReservationsByUnitId$();
+		await this.dismissLoading(this.loading);
 	}
 
 	getFutureReservationsByUnitId$() {
@@ -61,7 +62,6 @@ export class ListUnitReservationsComponent implements OnInit {
 
 			this.futureReservations = reservations;
 			this.unfilteredReservations = reservations;
-			this.dismissLoading(this.loading);
 		});
 	}
 
@@ -81,9 +81,15 @@ export class ListUnitReservationsComponent implements OnInit {
 
 	search() {
 		if (this.searchTerm) {
-			this.futureReservations = this.unfilteredReservations.filter(reservation => reservation.user.email.toLowerCase().includes(this.searchTerm.toLowerCase()));
+			this.futureReservations = this.unfilteredReservations
+				.filter(reservation => reservation.user.email.toLowerCase().includes(this.searchTerm.toLowerCase()));
 		} else {
 			this.futureReservations = this.unfilteredReservations;
 		}
+	}
+
+	async doRefresh($event: any) {
+		await this.init();
+		$event.target.complete();
 	}
 }
