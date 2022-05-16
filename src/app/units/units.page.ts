@@ -16,13 +16,35 @@ export class UnitsPage implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeav
 
 	unfilteredUnitsList: Unit[] = [];
 
-	private timer: Subscription;
 	private loading: HTMLIonLoadingElement;
 
 	constructor(private readonly auth: Auth, private readonly unitsService: UnitsService, private readonly loadingCtrl: LoadingController) {
 	}
 
 	ngOnInit() {
+	}
+
+	ionViewWillEnter() {
+		this.init();
+	}
+
+	ionViewWillLeave() {
+	}
+
+	ngOnDestroy() {
+	}
+
+	async init() {
+		this.loading = await this.presentLoading('Loading units...');
+
+		this.getUnits();
+
+		await this.dismissLoading(this.loading);
+	}
+
+	async doRefresh(event) {
+		await this.init();
+		event.target.complete();
 	}
 
 	getUnits() {
@@ -33,27 +55,6 @@ export class UnitsPage implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeav
 				sub();
 			}
 		});
-	}
-
-	ngOnDestroy() {
-	}
-
-	ionViewWillEnter() {
-		this.presentLoading('Loading...').then(async r => {
-			this.loading = r;
-			this.timer = timer(0, 60000).subscribe(() => {
-			});
-			console.log('Refreshing units list');
-			this.getUnits();
-			await this.dismissLoading(this.loading);
-		});
-	}
-
-	ionViewWillLeave() {
-		if (this.timer) {
-			this.timer.unsubscribe();
-			console.log('Units list unsubscribed');
-		}
 	}
 
 	async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {

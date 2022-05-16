@@ -10,6 +10,10 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+	<ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+		<ion-refresher-content></ion-refresher-content>
+	</ion-refresher>
+
 	<ion-searchbar animated="true" placeholder="Search" [(ngModel)]="searchTerm" (ionChange)="search()"></ion-searchbar>
 
 	<ion-list *ngIf="(futureReservations && futureReservations.length > 0); else noReservations">

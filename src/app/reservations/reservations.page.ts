@@ -20,7 +20,6 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	unfilteredReservations: Reservation[] = [];
 
 	searchTerm: any;
-	private unsub;
 
 	constructor(private readonly authService: AuthService, private readonly reservationsService: ReservationsService,
 	            private readonly firestore: Firestore, private readonly unitService: UnitsService,
@@ -32,15 +31,17 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {
-		if (this.unsub) {
-			this.unsub();
-		}
 	}
 
 	async init() {
 		this.loading = await this.presentLoading('Loading reservations...');
 		this.getFutureReservationsByUserId();
 		await this.dismissLoading(this.loading);
+	}
+
+	async doRefresh(event) {
+		await this.init();
+		event.target.complete();
 	}
 
 	getFutureReservationsByUserId() {
@@ -60,6 +61,15 @@ export class ReservationsPage implements OnInit, OnDestroy {
 		});
 	}
 
+	search() {
+		if (this.searchTerm) {
+			this.futureReservations = this.unfilteredReservations
+				.filter(reservation => reservation.unit.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
+		} else {
+			this.futureReservations = this.unfilteredReservations;
+		}
+	}
+
 	async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
 		const loading = await this.loadingController.create({
 			message: message ? message : 'Loading...',
@@ -71,14 +81,6 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	async dismissLoading(loading: HTMLIonLoadingElement) {
 		if (loading) {
 			await loading.dismiss();
-		}
-	}
-
-	search() {
-		if (this.searchTerm) {
-			this.futureReservations = this.unfilteredReservations.filter(reservation => reservation.unit.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
-		} else {
-			this.futureReservations = this.unfilteredReservations;
 		}
 	}
 }
