@@ -55,7 +55,7 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 	}
 
 	async getUnit(unitId: string) {
-		const unitObs = await this.unitsService.getUnitById(parseInt(unitId, 10)).toPromise();
+		const unitObs = await this.unitsService.getUnitById$(parseInt(unitId, 10)).toPromise();
 		this.unit = await unitObs.toPromise();
 		if (this.unit.devices.length > 0) {
 			console.log('unit has devices');

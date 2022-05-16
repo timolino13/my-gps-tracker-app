@@ -50,6 +50,7 @@ export class CreateUnitReservationComponent implements OnInit {
 
 	async reserve() {
 		this.loading = await this.presentLoading();
+
 		if (!this.valid()) {
 			await this.presentToast('Please fill all fields correctly');
 			await this.dismissLoading(this.loading);
@@ -87,7 +88,19 @@ export class CreateUnitReservationComponent implements OnInit {
 		});
 	}
 
-	getUsers() {
+	validStartTime() {
+		return this.startTime && this.startTime > this.now.toISOString() && this.startTime < this.endTime;
+	}
+
+	validEndTime() {
+		return this.endTime && this.endTime > this.startTime && this.endTime > this.now.toISOString();
+	}
+
+	valid() {
+		return this.selectedUser && this.validStartTime() && this.validEndTime();
+	}
+
+	private getUsers() {
 		const q = query(
 			collection(this.firestore, 'users'),
 			where('verified', '==', true)
@@ -106,19 +119,22 @@ export class CreateUnitReservationComponent implements OnInit {
 		});
 	}
 
-	async getFutureReservationsByUnitId() {
+	private async getUnit() {
+		const unitObs = await this.unitsService.getUnitById$(this.unitId).toPromise();
+		this.unit = await unitObs.toPromise();
+
+		console.log('Unit: ', this.unit);
+	}
+
+	private async getFutureReservationsByUnitId() {
 		return await this.reservationsService.getFutureReservationsByUnitId(this.unitId);
 	}
 
-	async getFutureReservationsByUserId() {
+	private async getFutureReservationsByUserId() {
 		return await this.reservationsService.getFutureReservationsByUserId(this.selectedUser.id);
 	}
 
-	validStartTime() {
-		return this.startTime && this.startTime > this.now.toISOString() && this.startTime < this.endTime;
-	}
-
-	async isUnitAlreadyReserved() {
+	private async isUnitAlreadyReserved() {
 		if (!this.unitFutureReservations) {
 			this.unitFutureReservations = await this.getFutureReservationsByUnitId();
 		}
@@ -132,7 +148,7 @@ export class CreateUnitReservationComponent implements OnInit {
 		return false;
 	}
 
-	async isUserAlreadyReserved() {
+	private async isUserAlreadyReserved() {
 		this.userFutureReservations = await this.getFutureReservationsByUserId();
 
 		for (const reservation of this.userFutureReservations) {
@@ -143,15 +159,7 @@ export class CreateUnitReservationComponent implements OnInit {
 		}
 	}
 
-	validEndTime() {
-		return this.endTime && this.endTime > this.startTime && this.endTime > this.now.toISOString();
-	}
-
-	valid() {
-		return this.selectedUser && this.validStartTime() && this.validEndTime();
-	}
-
-	async presentToast(message: string) {
+	private async presentToast(message: string) {
 		const toast = await this.toastController.create({
 			message,
 			duration: 2000
@@ -159,8 +167,7 @@ export class CreateUnitReservationComponent implements OnInit {
 		await toast.present();
 	}
 
-
-	async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
+	private async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
 		const loading = await this.loadingController.create({
 			message: message ? message : 'Loading...',
 		});
@@ -168,16 +175,9 @@ export class CreateUnitReservationComponent implements OnInit {
 		return loading;
 	}
 
-	async dismissLoading(loading: HTMLIonLoadingElement) {
+	private async dismissLoading(loading: HTMLIonLoadingElement) {
 		if (loading) {
 			await loading.dismiss();
 		}
-	}
-
-	private async getUnit() {
-		const unitObs = await this.unitsService.getUnitById(this.unitId).toPromise();
-		this.unit = await unitObs.toPromise();
-
-		console.log('Unit: ', this.unit);
 	}
 }

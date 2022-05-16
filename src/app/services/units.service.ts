@@ -41,7 +41,7 @@ export class UnitsService {
 		);
 	}
 
-	getUnitById(id: number) {
+	getUnitById$(id: number): Observable<Observable<Unit>> {
 		return this.authService.getCurrentUser$().pipe(
 			switchMap(async user => {
 				if (user) {

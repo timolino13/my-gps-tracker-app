@@ -49,7 +49,7 @@ export class ReservationsPage implements OnInit, OnDestroy {
 				this.futureReservations = await this.reservationsService.getFutureReservationsByUserId(user.uid);
 
 				for (const reservation of this.futureReservations) {
-					const unitResObs = await this.unitService.getUnitById(reservation.unitId).toPromise();
+					const unitResObs = await this.unitService.getUnitById$(reservation.unitId).toPromise();
 					reservation.unit = await unitResObs.toPromise();
 				}
 
