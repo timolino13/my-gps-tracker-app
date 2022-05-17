@@ -48,10 +48,9 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 		this.availableDevices.push(this.noDevice);
 
 		this.getUnit(unitId).then(async () => {
-			this.getFreeDevicesList().then(async r => {
-				await this.dismissLoading(this.loading);
-			});
+			await this.getFreeDevicesList();
 		});
+		await this.dismissLoading(this.loading);
 	}
 
 	showSaveButton(): boolean {

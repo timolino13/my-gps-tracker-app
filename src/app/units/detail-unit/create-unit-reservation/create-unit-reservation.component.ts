@@ -78,14 +78,18 @@ export class CreateUnitReservationComponent implements OnInit {
 			Timestamp.fromDate(new Date(this.endTime))
 		);
 
-		await this.reservationsService.createReservation$(reservation);
+		this.reservationsService.createReservation$(reservation).then(async (res) => {
+			await this.presentToast('Reservation created');
+			this.router.navigate(['/units/' + this.unitId + '/reservations']).then(() => {
+				console.log('navigated');
+			});
+		}).catch(e => {
+				console.log(e);
+				this.presentToast('Something went wrong. Please try again later');
+			}
+		);
 
 		await this.dismissLoading(this.loading);
-
-		await this.presentToast('Reservation created');
-		this.router.navigate(['/units/' + this.unitId + '/reservations']).then(() => {
-			console.log('navigated');
-		});
 	}
 
 	validStartTime() {
