@@ -19,6 +19,19 @@ export class AuthService {
 		this.observeUser();
 	}
 
+	async register(value: { email: string; password: string; confirmPassword: string }) {
+		await createUserWithEmailAndPassword(this.auth, value.email, value.password).then(async () => {
+			await this.usersService.createUserData(this.getCurrentUser());
+			await this.logout();
+			await this.router.navigateByUrl('/login');
+		}).catch((e) => {
+			console.error('register failed', e);
+			this.showAlert('Register failed', 'Please try again!');
+			return;
+		});
+
+	}
+
 	async login({email, password}): Promise<any> {
 
 		signInWithEmailAndPassword(this.auth, email, password).then(async (credentials) => {
@@ -54,34 +67,12 @@ export class AuthService {
 		return sendPasswordResetEmail(this.auth, email);
 	}
 
-	async showAlert(header, message) {
-		const alert = await this.alertController.create({
-			header,
-			message,
-			buttons: ['OK'],
-		});
-		await alert.present();
-	}
-
 	getCurrentUser(): User {
 		return this.currentUser;
 	}
 
 	getCurrentUser$(): Observable<User> {
 		return of(this.currentUser);
-	}
-
-	async register(value: { email: string; password: string; confirmPassword: string }) {
-		await createUserWithEmailAndPassword(this.auth, value.email, value.password).then(async () => {
-			await this.usersService.createUserData(this.getCurrentUser());
-			await this.logout();
-			await this.router.navigateByUrl('/login');
-		}).catch((e) => {
-			console.error('register failed', e);
-			this.showAlert('Register failed', 'Please try again!');
-			return;
-		});
-
 	}
 
 	private observeUser() {
@@ -92,5 +83,14 @@ export class AuthService {
 				this.currentUser = null;
 			}
 		});
+	}
+
+	private async showAlert(header, message) {
+		const alert = await this.alertController.create({
+			header,
+			message,
+			buttons: ['OK'],
+		});
+		await alert.present();
 	}
 }

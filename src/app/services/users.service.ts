@@ -56,18 +56,4 @@ export class UsersService {
 				tap((userData: UserDocument) => userData)
 			).toPromise();
 	}
-
-	getUserDataByUserRef$(userRef): Observable<UserDocument> {
-		if (userRef) {
-			return docData(userRef, {idField: 'id'}) as Observable<UserDocument>;
-		}
-		return of(null);
-	}
-
-	getUserDataByUserRef(userRef): Promise<UserDocument> {
-		return this.getUserDataByUserRef$(userRef).pipe(
-			take(1),
-			tap((userData: UserDocument) => userData)
-		).toPromise();
-	}
 }

@@ -19,18 +19,16 @@ export class ListUnitReservationsComponent implements OnInit, ViewWillEnter {
 	unitId: number;
 	unit: Unit;
 	futureReservations: Reservation[];
-
 	unfilteredReservations: Reservation[];
 
 	loading: HTMLIonLoadingElement;
-	searchTerm: any;
 
+	searchTerm: any;
 	changedOrder = false;
 
 	constructor(private readonly route: ActivatedRoute, private readonly reservationService: ReservationsService,
 	            private readonly authService: AuthService, private readonly firestore: Firestore,
-	            private readonly loadingController: LoadingController, private readonly usersService: UsersService,
-	            private readonly router: Router) {
+	            private readonly loadingController: LoadingController, private readonly usersService: UsersService,) {
 	}
 
 	ngOnInit() {
@@ -40,38 +38,6 @@ export class ListUnitReservationsComponent implements OnInit, ViewWillEnter {
 
 	ionViewWillEnter() {
 		this.init();
-	}
-
-	async init() {
-		this.loading = await this.presentLoading('Loading reservations...');
-		await this.getFutureReservationsByUnitId();
-		await this.dismissLoading(this.loading);
-	}
-
-	async getFutureReservationsByUnitId() {
-		this.futureReservations = await this.reservationService.getFutureReservationsByUnitId(this.unitId);
-
-		for (const reservation of this.futureReservations) {
-			reservation.user = await this.usersService.getUserDataByUserId(reservation.userId);
-		}
-
-		this.futureReservations.sort(this.compare);
-
-		this.unfilteredReservations = this.futureReservations;
-	}
-
-	async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
-		const loading = await this.loadingController.create({
-			message: message ? message : 'Loading...',
-		});
-		await loading.present();
-		return loading;
-	}
-
-	async dismissLoading(loading: HTMLIonLoadingElement) {
-		if (loading) {
-			await loading.dismiss();
-		}
 	}
 
 	search() {
@@ -93,7 +59,25 @@ export class ListUnitReservationsComponent implements OnInit, ViewWillEnter {
 		this.futureReservations.reverse();
 	}
 
-	compare(a: Reservation, b: Reservation) {
+	private async init() {
+		this.loading = await this.presentLoading('Loading reservations...');
+		await this.getFutureReservationsByUnitId();
+		await this.dismissLoading(this.loading);
+	}
+
+	private async getFutureReservationsByUnitId() {
+		this.futureReservations = await this.reservationService.getFutureReservationsByUnitId(this.unitId);
+
+		for (const reservation of this.futureReservations) {
+			reservation.user = await this.usersService.getUserDataByUserId(reservation.userId);
+		}
+
+		this.futureReservations.sort(this.compare);
+
+		this.unfilteredReservations = this.futureReservations;
+	}
+
+	private compare(a: Reservation, b: Reservation) {
 		if (a.user?.email < b.user?.email) {
 			return -1;
 		}
@@ -101,5 +85,19 @@ export class ListUnitReservationsComponent implements OnInit, ViewWillEnter {
 			return 1;
 		}
 		return 0;
+	}
+
+	private async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
+		const loading = await this.loadingController.create({
+			message: message ? message : 'Loading...',
+		});
+		await loading.present();
+		return loading;
+	}
+
+	private async dismissLoading(loading: HTMLIonLoadingElement) {
+		if (loading) {
+			await loading.dismiss();
+		}
 	}
 }

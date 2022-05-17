@@ -16,11 +16,11 @@ import {LoadingController, ToastController} from '@ionic/angular';
 })
 export class CreateUnitReservationComponent implements OnInit {
 
-	unitId: number;
 	now: Date = new Date();
 	endTime: string;
-
 	startTime: string;
+
+	unitId: number;
 	selectedUser: UserDocument;
 	users: UserDocument[];
 

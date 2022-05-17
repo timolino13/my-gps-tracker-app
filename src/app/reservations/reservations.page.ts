@@ -35,27 +35,9 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	ngOnDestroy() {
 	}
 
-	async init() {
-		this.loading = await this.presentLoading('Loading reservations...');
-		this.getFutureReservationsByUserId();
-		await this.dismissLoading(this.loading);
-	}
-
 	async doRefresh(event) {
 		await this.init();
 		event.target.complete();
-	}
-
-	getFutureReservationsByUserId() {
-		this.authService.getCurrentUser$().subscribe(async user => {
-			if (user) {
-				this.futureReservations = await this.reservationsService.getFutureReservationsByUserId(user.uid);
-
-				this.futureReservations.sort(this.compare);
-
-				this.unfilteredReservations = this.futureReservations;
-			}
-		});
 	}
 
 	search() {
@@ -67,26 +49,30 @@ export class ReservationsPage implements OnInit, OnDestroy {
 		}
 	}
 
-	async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
-		const loading = await this.loadingController.create({
-			message: message ? message : 'Loading...',
-		});
-		await loading.present();
-		return loading;
-	}
-
-	async dismissLoading(loading: HTMLIonLoadingElement) {
-		if (loading) {
-			await loading.dismiss();
-		}
-	}
-
 	reverse() {
 		this.changedOrder = !this.changedOrder;
 		this.futureReservations.reverse();
 	}
 
-	compare(a, b) {
+	private async init() {
+		this.loading = await this.presentLoading('Loading reservations...');
+		this.getFutureReservationsByUserId();
+		await this.dismissLoading(this.loading);
+	}
+
+	private getFutureReservationsByUserId() {
+		this.authService.getCurrentUser$().subscribe(async user => {
+			if (user) {
+				this.futureReservations = await this.reservationsService.getFutureReservationsByUserId(user.uid);
+
+				this.futureReservations.sort(this.compare);
+
+				this.unfilteredReservations = this.futureReservations;
+			}
+		});
+	}
+
+	private compare(a, b) {
 		if (a.unitName < b.unitName) {
 			return -1;
 		}
@@ -94,5 +80,19 @@ export class ReservationsPage implements OnInit, OnDestroy {
 			return 1;
 		}
 		return 0;
+	}
+
+	private async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
+		const loading = await this.loadingController.create({
+			message: message ? message : 'Loading...',
+		});
+		await loading.present();
+		return loading;
+	}
+
+	private async dismissLoading(loading: HTMLIonLoadingElement) {
+		if (loading) {
+			await loading.dismiss();
+		}
 	}
 }

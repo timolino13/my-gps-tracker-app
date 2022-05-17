@@ -11,11 +11,6 @@ export class ReservationsService {
 	constructor(private readonly firestore: Firestore) {
 	}
 
-	getReservationById$(userId: string): Observable<Reservation> {
-		const userDocRef = doc(this.firestore, `reservations/${userId}`);
-		return docData(userDocRef, {idField: 'id'}) as Observable<Reservation>;
-	}
-
 	async createReservation$(reservation: Reservation): Promise<Observable<Reservation>> {
 
 		const reservationDocRef = addDoc(collection(this.firestore, 'reservations'), {
@@ -37,6 +32,11 @@ export class ReservationsService {
 			startTime: reservation.startTime,
 			endTime: reservation.endTime,
 		});
+	}
+
+	getReservationById$(userId: string): Observable<Reservation> {
+		const userDocRef = doc(this.firestore, `reservations/${userId}`);
+		return docData(userDocRef, {idField: 'id'}) as Observable<Reservation>;
 	}
 
 	async getFutureReservationsByUnitId(unitId: number): Promise<Reservation[]> {
