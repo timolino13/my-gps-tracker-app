@@ -16,6 +16,7 @@ export class UnitsPage implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeav
 
 	unfilteredUnitsList: Unit[] = [];
 
+	changedOrder = false;
 	private loading: HTMLIonLoadingElement;
 
 	constructor(private readonly auth: Auth, private readonly unitsService: UnitsService, private readonly loadingCtrl: LoadingController) {
@@ -51,6 +52,8 @@ export class UnitsPage implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeav
 		const sub = onAuthStateChanged(this.auth, async (user) => {
 			if (user) {
 				this.unitsList = await this.unitsService.getUnits().toPromise();
+				this.unitsList.sort(this.compare);
+
 				this.unfilteredUnitsList = this.unitsList;
 				sub();
 			}
@@ -78,5 +81,20 @@ export class UnitsPage implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeav
 		} else {
 			this.unitsList = this.unfilteredUnitsList;
 		}
+	}
+
+	reverse() {
+		this.changedOrder = !this.changedOrder;
+		this.unitsList.reverse();
+	}
+
+	compare(a: Unit, b: Unit) {
+		if (a.name < b.name) {
+			return -1;
+		}
+		if (a.name > b.name) {
+			return 1;
+		}
+		return 0;
 	}
 }

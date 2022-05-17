@@ -21,6 +21,8 @@ export class ReservationsPage implements OnInit, OnDestroy {
 
 	searchTerm: any;
 
+	changedOrder = false;
+
 	constructor(private readonly authService: AuthService, private readonly reservationsService: ReservationsService,
 	            private readonly firestore: Firestore, private readonly unitService: UnitsService,
 	            private readonly loadingController: LoadingController) {
@@ -49,12 +51,7 @@ export class ReservationsPage implements OnInit, OnDestroy {
 			if (user) {
 				this.futureReservations = await this.reservationsService.getFutureReservationsByUserId(user.uid);
 
-				for (const reservation of this.futureReservations) {
-					const unitResObs = await this.unitService.getUnitById$(reservation.unitId).toPromise();
-					reservation.unit = await unitResObs.toPromise();
-				}
-
-				console.log(this.futureReservations);
+				this.futureReservations.sort(this.compare);
 
 				this.unfilteredReservations = this.futureReservations;
 			}
@@ -82,5 +79,20 @@ export class ReservationsPage implements OnInit, OnDestroy {
 		if (loading) {
 			await loading.dismiss();
 		}
+	}
+
+	reverse() {
+		this.changedOrder = !this.changedOrder;
+		this.futureReservations.reverse();
+	}
+
+	compare(a, b) {
+		if (a.unitName < b.unitName) {
+			return -1;
+		}
+		if (a.unitName > b.unitName) {
+			return 1;
+		}
+		return 0;
 	}
 }

@@ -12,16 +12,20 @@
 		<ion-refresher-content></ion-refresher-content>
 	</ion-refresher>
 
-	<ion-searchbar animated="true" placeholder="Search" [(ngModel)]="searchTerm" (ionChange)="search()"></ion-searchbar>
+	<ion-item>
+		<ion-searchbar animated="true" placeholder="Search" [(ngModel)]="searchTerm" (ionChange)="search()"></ion-searchbar>
+
+		<ion-button fill="clear" (click)="reverse()">
+			<ion-icon *ngIf="!changedOrder" name="caret-down-outline"></ion-icon>
+			<ion-icon *ngIf="changedOrder" name="caret-up-outline"></ion-icon>
+		</ion-button>
+	</ion-item>
 
 	<ion-list *ngIf="futureReservations.length > 0; else noReservations">
 
 		<ion-item *ngFor="let reservation of futureReservations" [routerLink]="['/reservations', reservation.id]">
 			<ion-label>
-				<h2 *ngIf="reservation.unit; else noUnit">{{reservation.unit.name}}</h2>
-				<ng-template #noUnit>
-					<h2>{{reservation.unitId}}</h2>
-				</ng-template>
+				<h2>{{reservation.unitName}}</h2>
 				<p>{{reservation.startTime.toDate() | date:'dd/MM/yy, H:mm'}}</p>
 				<p>{{reservation.endTime.toDate() | date: 'dd/MM/yy, H:mm'}}</p>
 			</ion-label>

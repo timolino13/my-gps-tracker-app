@@ -25,6 +25,8 @@ export class ListUnitReservationsComponent implements OnInit {
 	loading: HTMLIonLoadingElement;
 	searchTerm: any;
 
+	changedOrder = false;
+
 	constructor(private readonly route: ActivatedRoute, private readonly reservationService: ReservationsService,
 	            private readonly authService: AuthService, private readonly firestore: Firestore,
 	            private readonly loadingController: LoadingController, private readonly usersService: UsersService,
@@ -39,30 +41,20 @@ export class ListUnitReservationsComponent implements OnInit {
 
 	async init() {
 		this.loading = await this.presentLoading('Loading reservations...');
-		this.getFutureReservationsByUnitId$();
+		await this.getFutureReservationsByUnitId();
 		await this.dismissLoading(this.loading);
 	}
 
-	getFutureReservationsByUnitId$() {
-		const q = query(
-			collection(this.firestore, 'reservations'),
-			where('unitId', '==', this.unitId),
-			where('endTime', '>', new Date())
-		);
+	async getFutureReservationsByUnitId() {
+		this.futureReservations = await this.reservationService.getFutureReservationsByUnitId(this.unitId);
 
-		onSnapshot(q, (querySnapshot) => {
-			const reservations: Reservation[] = [];
-			console.log('querySnapshot: ', querySnapshot);
-			querySnapshot.forEach(async (d) => {
-				const reservation = d.data() as Reservation;
-				reservation.id = d.id;
-				reservation.user = await this.usersService.getUserDataByUserId(reservation.userId);
-				reservations.push(reservation);
-			});
+		for (const reservation of this.futureReservations) {
+			reservation.user = await this.usersService.getUserDataByUserId(reservation.userId);
+		}
 
-			this.futureReservations = reservations;
-			this.unfilteredReservations = reservations;
-		});
+		this.futureReservations.sort(this.compare);
+
+		this.unfilteredReservations = this.futureReservations;
 	}
 
 	async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {
@@ -91,5 +83,20 @@ export class ListUnitReservationsComponent implements OnInit {
 	async doRefresh($event: any) {
 		await this.init();
 		$event.target.complete();
+	}
+
+	reverse() {
+		this.changedOrder = !this.changedOrder;
+		this.futureReservations.reverse();
+	}
+
+	compare(a: Reservation, b: Reservation) {
+		if (a.user?.email < b.user?.email) {
+			return -1;
+		}
+		if (a.user?.email > b.user?.email) {
+			return 1;
+		}
+		return 0;
 	}
 }
