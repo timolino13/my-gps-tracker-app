@@ -5,7 +5,7 @@ import {ReservationsService} from '../../../services/reservations.service';
 import {Unit} from '../../../models/unit';
 import {collection, Firestore, onSnapshot, query, where} from '@angular/fire/firestore';
 import {AuthService} from '../../../services/auth.service';
-import {LoadingController} from '@ionic/angular';
+import {LoadingController, ViewWillEnter} from '@ionic/angular';
 import {UsersService} from '../../../services/users.service';
 import {timer} from 'rxjs';
 
@@ -14,7 +14,7 @@ import {timer} from 'rxjs';
 	templateUrl: './list-unit-reservations.component.html',
 	styleUrls: ['./list-unit-reservations.component.scss'],
 })
-export class ListUnitReservationsComponent implements OnInit {
+export class ListUnitReservationsComponent implements OnInit, ViewWillEnter {
 
 	unitId: number;
 	unit: Unit;
@@ -36,6 +36,9 @@ export class ListUnitReservationsComponent implements OnInit {
 	ngOnInit() {
 		this.unitId = parseInt(this.route.snapshot.paramMap.get('unitId'), 10);
 		console.log('unitId: ', this.unitId);
+	}
+
+	ionViewWillEnter() {
 		this.init();
 	}
 
