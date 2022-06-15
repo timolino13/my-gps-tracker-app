@@ -23,10 +23,11 @@ export class AuthService {
 		await createUserWithEmailAndPassword(this.auth, value.email, value.password).then(async () => {
 			await this.usersService.createUserData(this.getCurrentUser());
 			await this.logout();
+			await this.showAlert('Register successful', 'Please ask an administrator to verify your account!');
 			await this.router.navigateByUrl('/login');
-		}).catch((e) => {
+		}).catch((e: Error) => {
 			console.error('register failed', e);
-			this.showAlert('Register failed', 'Please try again!');
+			this.showAlert('Register failed', this.formatErrorMessage(e.message));
 			return;
 		});
 
@@ -53,7 +54,7 @@ export class AuthService {
 			}
 		}).catch(async (e) => {
 			console.error('login failed', e);
-			await this.showAlert('Login failed', 'Please try again!');
+			await this.showAlert('Login failed', this.formatErrorMessage(e.message));
 			return;
 		});
 	}
@@ -72,6 +73,7 @@ export class AuthService {
 	}
 
 	getCurrentUser$(): Observable<User> {
+		console.log(this.currentUser);
 		return of(this.currentUser);
 	}
 
@@ -92,5 +94,13 @@ export class AuthService {
 			buttons: ['OK'],
 		});
 		await alert.present();
+	}
+
+	private formatErrorMessage(message: string): string {
+		let errorMessage = message.split('/')[1];
+		errorMessage = errorMessage.split(')')[0];
+		errorMessage = errorMessage.replaceAll('-', ' ');
+		errorMessage = errorMessage.charAt(0).toUpperCase() + errorMessage.slice(1);
+		return errorMessage;
 	}
 }

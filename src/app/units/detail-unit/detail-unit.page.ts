@@ -184,10 +184,9 @@ export class DetailUnitPage implements OnInit, ViewWillEnter {
 	private async presentToast(message: string) {
 		const toast = await this.toastController.create({
 			message,
-			duration: 2000
+			duration: 3000
 		});
 		await toast.present();
-		await this.init();
 	}
 
 	private async presentLoading(message?: string): Promise<HTMLIonLoadingElement> {

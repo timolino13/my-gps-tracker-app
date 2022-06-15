@@ -43,7 +43,7 @@ export class ReservationsPage implements OnInit, OnDestroy {
 	search() {
 		if (this.searchTerm) {
 			this.futureReservations = this.unfilteredReservations
-				.filter(reservation => reservation.unit.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
+				.filter(reservation => reservation.unitName.toLowerCase().includes(this.searchTerm.toLowerCase()));
 		} else {
 			this.futureReservations = this.unfilteredReservations;
 		}

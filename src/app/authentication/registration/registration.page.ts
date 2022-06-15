@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
-import {LoadingController} from '@ionic/angular';
+import {LoadingController, ToastController} from '@ionic/angular';
 
 @Component({
 	selector: 'app-registration',
@@ -12,7 +12,7 @@ export class RegistrationPage implements OnInit {
 	credentials: FormGroup;
 
 	constructor(private readonly formBuilder: FormBuilder, private readonly authService: AuthService,
-	            private readonly loadingController: LoadingController) {
+	            private readonly loadingController: LoadingController, private readonly toastController: ToastController) {
 	}
 
 	get email() {
@@ -46,8 +46,18 @@ export class RegistrationPage implements OnInit {
 		});
 		await loading.present();
 
-		await this.authService.register(this.credentials.value);
+		await this.authService.register(this.credentials.value).catch(async error => {
+			await loading.dismiss();
+			console.error(error);
+		});
 
 		await loading.dismiss();
+	}
+	private async presentToast(message: string) {
+		const toast = await this.toastController.create({
+			message,
+			duration: 2000
+		});
+		await toast.present();
 	}
 }

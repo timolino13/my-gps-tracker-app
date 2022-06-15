@@ -34,13 +34,13 @@
 
 					<ion-item *ngIf="reservation.unit.trackPoint.valid">
 						<ion-label>
-							<h2><strong>Tracker info:</strong></h2>
-						</ion-label>
-						<ion-label>
-							<h3><strong>Latitude: </strong>{{reservation.unit.trackPoint.position.latitude | number: '1.0-5'}}</h3>
-						</ion-label>
-						<ion-label>
-							<h3><strong>Longitude: </strong>{{reservation.unit.trackPoint.position.longitude | number: '1.0-5'}}</h3>
+							<strong>Tracker info:</strong>
+							<ion-label>
+								<h4><strong>Latitude: </strong>{{reservation.unit.trackPoint.position.latitude | number: '1.0-5'}}</h4>
+							</ion-label>
+							<ion-label>
+								<h4><strong>Longitude: </strong>{{reservation.unit.trackPoint.position.longitude | number: '1.0-5'}}</h4>
+							</ion-label>
 						</ion-label>
 					</ion-item>
 				</ng-container>
